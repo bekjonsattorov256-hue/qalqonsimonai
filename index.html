@@ -27,7 +27,7 @@
 
     /* ====== APP LAYOUT ====== */
     .wrap{
-      max-width: 1920px; /* ENIGA YANADA KENGAYTIRILDI */
+      max-width: 1920px;
       margin: 18px auto 26px;
       padding: 0 16px;
     }
@@ -246,7 +246,7 @@
       padding:16px 16px;
       color:#5a3a00;
       font-weight:1000;
-      font-size:16px; /* KATTAROQ QILDIM */
+      font-size:16px;
       line-height:1.55;
     }
     .disclaimerBox b{ color:#3a2500; }
@@ -257,6 +257,21 @@
       font-size:12px;
       margin-top:10px;
     }
+
+    /* ====== LOGOUT BUTTON ====== */
+    .logoutBtn{
+      margin-top:10px;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid #d6e2f2;
+      background:#fff;
+      color:#0b4fa2;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(10,30,60,.08);
+      width: 120px;
+    }
+    .logoutBtn:hover{ filter:brightness(.98); }
 
     /* ====== ROI MODAL ====== */
     .modalBack{
@@ -338,19 +353,16 @@
       min-height: 520px;
     }
 
-    /* ✅ MUHIM: BRAND PANE MARKAZGA */
     .brandPane{
       padding:28px 30px;
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 70%, #eef6ff 100%);
       position:relative;
-
-      display:flex;                 /* NEW */
-      flex-direction:column;        /* NEW */
-      justify-content:center;        /* NEW (vertikal markaz) */
-      align-items:center;            /* NEW (gorizontal markaz) */
-      text-align:center;             /* NEW */
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
-
     .brandPane:after{
       content:"";
       position:absolute; inset:auto -120px -140px auto;
@@ -359,10 +371,9 @@
       transform: rotate(-10deg);
       pointer-events:none;
     }
-
     .brandRow{
       display:flex; align-items:center; gap:16px;
-      justify-content:center; /* NEW */
+      justify-content:center;
       z-index:1;
     }
     .brandLogo{
@@ -388,14 +399,7 @@
       color:#17355a;
       z-index:1;
     }
-    .brandNote{
-      margin-top:14px;
-      color:#3b4a5f;
-      font-size:14px;
-      line-height:1.55;
-      max-width: 520px;
-      z-index:1;
-    }
+    .brandNote{ margin-top:14px; color:#3b4a5f; font-size:14px; line-height:1.55; max-width:520px; z-index:1; }
 
     .formPane{
       padding:28px 26px;
@@ -462,7 +466,7 @@
       padding:18px 16px;
       color:#13233b;
       line-height:1.7;
-      font-size:15px; /* biroz kattaroq */
+      font-size:15px;
     }
     .consentFooter{
       display:flex;
@@ -491,6 +495,7 @@
       .loginShell{ grid-template-columns: 1fr; }
       .brandRow{ flex-direction:column; }
       .brandTitle{ letter-spacing:4px; }
+      .logoutBtn{ width:auto; }
     }
   </style>
 </head>
@@ -532,7 +537,6 @@
         <div class="closeX" id="closeConsent">✕</div>
       </div>
 
-      <!-- ✅ BU YER HTML TOZALANDI -->
       <div class="consentBody">
         Men “Qalqonsimon AI” dasturi tijorat (klinika) foydalanish uchun mo‘ljallanmagan,
         faqat ilmiy-tadqiqot (research) maqsadidagi demo ekanligini to‘liq tushunaman.
@@ -574,9 +578,11 @@
           </div>
         </div>
 
+        <!-- ✅ RIGHT: universitet + logout -->
         <div class="logoBox right">
-          <div>
-            <div class="logoText" style="text-align:right;">Toshkent Davlat Tibbiyot Universiteti</div>
+          <div style="text-align:right;">
+            <div class="logoText">Toshkent Davlat Tibbiyot Universiteti</div>
+            <button class="logoutBtn" id="logoutBtn" type="button">Chiqish</button>
           </div>
           <img class="logo" id="logoRight" src="logo_right.png" alt="Logo right" />
         </div>
@@ -596,7 +602,6 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
       <div class="card">
         <div class="cardHead">Rasm</div>
         <div class="cardBody">
@@ -611,7 +616,6 @@
         </div>
       </div>
 
-      <!-- RIGHT -->
       <div class="card">
         <div class="cardHead">Natija</div>
         <div class="cardBody">
@@ -700,6 +704,19 @@
   const LS_LOGIN = "qalqonsimon_logged_in";
   const LS_AGREE = "qalqonsimon_agreed";
 
+  function doLogout(){
+    localStorage.removeItem(LS_LOGIN);
+    localStorage.removeItem(LS_AGREE);
+
+    hideConsent();
+    gate.style.display = "flex";
+    app.style.display = "none";
+
+    if(loginUser) loginUser.value = "";
+    if(loginPass) loginPass.value = "";
+    if(loginErr) loginErr.textContent = "";
+  }
+
   function boot(){
     const logged = localStorage.getItem(LS_LOGIN) === "1";
     const agreed = localStorage.getItem(LS_AGREE) === "1";
@@ -717,6 +734,7 @@
     }
     hideConsent();
     enterApp();
+    resetIdleTimer(); // ✅ app ochilganda timer start
   }
 
   loginBtn.addEventListener("click", ()=>{
@@ -746,14 +764,42 @@
     localStorage.setItem(LS_AGREE, "1");
     hideConsent();
     enterApp();
+    resetIdleTimer(); // ✅ rozilikdan so‘ng timer start
   });
 
   closeConsent.addEventListener("click", ()=>{
-    hideConsent();
-    gate.style.display = "flex";
-    app.style.display = "none";
-    localStorage.removeItem(LS_LOGIN);
-    localStorage.removeItem(LS_AGREE);
+    doLogout();
+  });
+
+  // ✅ Logout tugmasi
+  const logoutBtn = document.getElementById("logoutBtn");
+  if(logoutBtn){
+    logoutBtn.addEventListener("click", ()=>{
+      doLogout();
+    });
+  }
+
+  // =========================
+  // ✅ AUTO LOGOUT: 5 daqiqa inactivity
+  // =========================
+  const AUTO_LOGOUT_MS = 5 * 60 * 1000; // 5 minut
+  let idleTimer = null;
+
+  function resetIdleTimer(){
+    if(idleTimer) clearTimeout(idleTimer);
+
+    const logged = localStorage.getItem(LS_LOGIN) === "1";
+    const agreed = localStorage.getItem(LS_AGREE) === "1";
+    if(!(logged && agreed)) return;
+
+    idleTimer = setTimeout(()=>{
+      alert("5 daqiqa faoliyat bo‘lmadi. Xavfsizlik uchun tizimdan chiqildi.");
+      doLogout();
+    }, AUTO_LOGOUT_MS);
+  }
+
+  ["mousemove","mousedown","keydown","scroll","touchstart","click"].forEach(evt=>{
+    window.addEventListener(evt, resetIdleTimer, { passive:true });
   });
 
   // ==== ROI / CLASSIFY code (sizniki) ====
@@ -901,6 +947,8 @@
 
     riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
+
+    resetIdleTimer(); // ✅ activity
   });
 
   analyzeBtn.addEventListener("click", ()=>{
@@ -910,6 +958,7 @@
     }
     openModal();
     setTimeout(drawCanvas, 50);
+    resetIdleTimer(); // ✅ activity
   });
 
   resetBtn.addEventListener("click", ()=>{
@@ -925,6 +974,7 @@
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
 
     hideModal();
+    resetIdleTimer(); // ✅ activity
   });
 
   closeModal.addEventListener("click", hideModal);
