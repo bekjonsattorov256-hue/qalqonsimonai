@@ -7,142 +7,135 @@
 
   <style>
     :root{
-      --bg:#eef3fb;
+      --bg:#eef4fb;
       --panel:#ffffff;
       --blue:#0b61b3;
-      --blue2:#0a4f95;
-      --green:#189a4a;
-      --text:#0b1320;
-      --muted:#5b6b7f;
-      --border:#d9e2ec;
-      --shadow:0 10px 30px rgba(0,0,0,.08);
-      --radius:18px;
+      --blue2:#094a8d;
+      --green:#169a4a;
+      --gray:#2f3a49;
+      --border:#d6e2f2;
+      --shadow:0 14px 40px rgba(10,30,60,.12);
+      --radius:20px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:var(--bg);
-      color:var(--text);
+      background: radial-gradient(1200px 700px at 30% 0%, #f7fbff 0%, var(--bg) 55%, #eaf2ff 100%);
+      color:#0b1320;
     }
 
-    /* ====== LAYOUT: WIDER ====== */
+    /* ====== APP LAYOUT ====== */
     .wrap{
-      max-width:1440px; /* kengaytirildi */
-      margin:18px auto 28px;
-      padding:0 16px;
+      max-width: 1480px; /* ENIGA KENGAYTIRILDI */
+      margin: 18px auto 26px;
+      padding: 0 16px;
     }
 
-    /* ====== HEADER ====== */
     .header{
       background:var(--panel);
       border-radius:26px;
       box-shadow:var(--shadow);
-      padding:16px 22px 12px;
       border:1px solid var(--border);
+      padding:18px 22px 12px;
+      position:relative;
+      overflow:hidden;
+    }
+    .header:before{
+      content:"";
+      position:absolute; inset:-120px -160px auto auto;
+      width:420px; height:420px;
+      background: radial-gradient(circle at 30% 30%, rgba(11,97,179,.18), rgba(11,97,179,0) 60%);
+      transform: rotate(12deg);
+      pointer-events:none;
     }
 
-    /* 3-column header: left brand / center title / right brand */
     .hdr-top{
       display:grid;
-      grid-template-columns: 330px 1fr 330px;
+      grid-template-columns: 320px 1fr 320px; /* chap/ong blok kattaroq */
       align-items:center;
-      gap:12px;
+      gap:14px;
     }
 
-    .brand{
+    .logoBox{
       display:flex;
       align-items:center;
       gap:14px;
       min-width:0;
     }
-    .brand.right{
-      justify-content:flex-end;
-      text-align:right;
-    }
-
-    /* bigger logos */
+    .logoBox.right{ justify-content:flex-end; }
     .logo{
-      width:74px;
-      height:74px;
-      border-radius:18px;
-      border:1px solid #dbe6f3;
-      background:#fff;
+      width:68px; height:68px; /* LOGO KATTAROQ */
+      border-radius:16px;
+      border:2px solid #e5eefb;
       object-fit:contain;
+      background:#fff;
       padding:6px;
-      box-shadow:0 8px 18px rgba(11,97,179,.10);
+      box-shadow: 0 8px 20px rgba(10,30,60,.08);
     }
-
-    /* one-line text, bigger, centered-ish */
-    .brandText{
-      font-size:16px;
-      font-weight:800;
-      color:#0f2540;
-      white-space:nowrap;     /* 1 qatorda */
+    .logoText{
+      font-size:18px; /* TAGIDAGI YOZUV KATTAROQ */
+      font-weight:900;
+      color:#13233b;
+      line-height:1.15;
+      white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
-    .centerTitle{
-      text-align:center;
-      padding:0 10px;
+    .logoText.small{
+      font-size:13px;
+      font-weight:700;
+      color:#3a4a63;
+      margin-top:2px;
     }
+
+    .titleBlock{ text-align:center; }
     .title{
       margin:0;
-      font-weight:1000;
-      letter-spacing:7px;
       font-size:46px;
-      line-height:1.05;
+      letter-spacing:7px;
+      font-weight:1000;
     }
     .subtitle{
-      margin:6px 0 0;
-      font-size:16px;
+      margin:4px 0 0;
+      font-size:18px;
       font-weight:800;
-      color:#12355a;
+      color:#17355a;
     }
     .desc{
-      margin:10px auto 0;
-      max-width:760px;
-      color:var(--muted);
+      margin:10px 0 0;
       font-size:14px;
-      line-height:1.35;
+      color:#3b4a5f;
     }
 
-    /* ====== CONTROLS ====== */
     .controls{
+      margin-top:14px;
       display:grid;
-      grid-template-columns: 280px 1fr 1fr 150px 140px;
+      grid-template-columns: 280px 1fr 1fr 160px 150px;
       gap:10px;
       align-items:center;
-      padding:14px 0 0;
     }
-    .fileRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      min-width:0;
-    }
-    input[type="file"]{ display:none; }
 
     .btn{
       border:0;
-      padding:11px 16px;
+      padding:11px 14px;
       border-radius:12px;
       font-weight:900;
       cursor:pointer;
       transition:.15s transform ease, .15s filter ease;
-      box-shadow:0 10px 18px rgba(0,0,0,.08);
+      box-shadow: 0 8px 18px rgba(10,30,60,.08);
     }
-    .btn:active{ transform: scale(.98); }
-    .btn:hover{ filter:brightness(1.03); }
-    .btn.blue{ background:var(--blue); color:#fff; }
-    .btn.green{ background:linear-gradient(180deg,#1db457,#148a40); color:#fff; }
-    .btn.gray{ background:#2f3b4b; color:#fff; }
+    .btn:active{ transform: scale(.985); }
+    .btn.blue{ background: linear-gradient(180deg, #0f6fd0, var(--blue)); color:#fff; }
+    .btn.green{ background: linear-gradient(180deg, #19b35a, var(--green)); color:#fff; }
+    .btn.gray{ background: linear-gradient(180deg, #3a4657, var(--gray)); color:#fff; }
+    .btn:disabled{ opacity:.65; cursor:not-allowed; box-shadow:none; }
 
+    .fileRow{ display:flex; gap:10px; align-items:center; }
+    input[type="file"]{ display:none; }
     .fileName{
-      flex:1;
       font-size:13px;
-      color:#2a3a50;
+      color:#314056;
       border:1px solid var(--border);
       border-radius:12px;
       padding:11px 12px;
@@ -150,9 +143,8 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
-      min-width:0;
+      flex:1;
     }
-
     .inp{
       width:100%;
       border:1px solid var(--border);
@@ -162,18 +154,15 @@
       outline:none;
       font-size:14px;
     }
-    .inp:focus{
-      border-color:#9cc1ea;
-      box-shadow:0 0 0 3px rgba(11,97,179,.12);
-    }
+    .inp:focus{ border-color:#9cc1ea; box-shadow:0 0 0 4px rgba(11,97,179,.12); }
 
-    /* ====== MAIN ====== */
     .grid{
       display:grid;
       grid-template-columns: 1.25fr .75fr;
       gap:14px;
-      margin-top:14px;
+      margin-top:12px;
     }
+
     .card{
       background:var(--panel);
       border:1px solid var(--border);
@@ -182,19 +171,19 @@
       overflow:hidden;
     }
     .cardHead{
-      background:linear-gradient(90deg,#0b61b3,#0a4f95);
+      background: linear-gradient(180deg, #0f6fd0, #0b5aa6);
       color:#fff;
-      padding:12px 14px;
+      padding:11px 14px;
       font-weight:1000;
       font-size:18px;
     }
     .cardBody{ padding:14px; }
 
     .imgFrame{
-      background:#f2f6fb;
-      border:1px solid #dfe7f0;
-      border-radius:16px;
-      min-height:520px;
+      background:#f2f7ff;
+      border:1px solid #dfe9f7;
+      border-radius:18px;
+      min-height: 540px; /* kattaroq */
       display:flex;
       align-items:center;
       justify-content:center;
@@ -212,65 +201,63 @@
       text-align:center;
       font-weight:800;
     }
-
     .note{
       margin-top:10px;
       color:#415166;
       font-size:13px;
-      line-height:1.35;
+      line-height:1.45;
     }
 
-    /* ====== RESULT ====== */
-    .centered{
-      text-align:center;
-    }
+    /* RESULT */
+    .center{ text-align:center; }
 
-    .pillBig{
+    .pill{
       display:inline-block;
       padding:10px 18px;
       border-radius:999px;
-      background:linear-gradient(90deg,#0a4f95,#0b61b3);
+      background: linear-gradient(180deg, #0f6fd0, #0b5aa6);
       color:#fff;
       font-weight:1000;
       font-size:15px; /* kattaroq */
-      margin:10px 0 10px;
-      box-shadow:0 10px 18px rgba(11,97,179,.15);
-      letter-spacing:.5px;
+      margin:8px 0 12px;
+      box-shadow: 0 10px 22px rgba(11,97,179,.18);
     }
-
-    .midPillBig{
-      display:inline-block;
-      padding:10px 18px;
-      border-radius:999px;
-      background:linear-gradient(90deg,#0d7f63,#0fb088);
-      color:#fff;
-      font-weight:1000;
-      font-size:15px; /* kattaroq */
-      margin:14px 0 10px;
-      box-shadow:0 10px 18px rgba(13,127,99,.15);
-      letter-spacing:.5px;
+    .pill.green{
+      background: linear-gradient(180deg, #19b35a, #0d7f63);
+      box-shadow: 0 10px 22px rgba(13,127,99,.18);
     }
 
     .bigBox{
       border:1px solid #dbe7f5;
       background:#f7fbff;
-      border-radius:14px;
+      border-radius:16px;
       padding:18px;
-      min-height:92px;
+      min-height:88px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:26px;
+      font-size:28px;
       font-weight:1000;
       text-align:center;
     }
-
-    .summaryBox{
+    .bigBox.small{
       font-size:20px;
-      font-weight:900;
+      min-height:76px;
     }
 
-    /* ====== FOOTER ====== */
+    .disclaimerBox{
+      margin-top:14px;
+      border-radius:16px;
+      border:1px solid #ffe2b6;
+      background: linear-gradient(180deg, #fff7e9, #fff2dd);
+      padding:14px 14px;
+      color:#5a3a00;
+      font-weight:900;
+      font-size:15px; /* KATTA KO‘RINADI */
+      line-height:1.45;
+    }
+    .disclaimerBox b{ color:#3a2500; }
+
     .footer{
       text-align:center;
       color:#6b7785;
@@ -278,7 +265,7 @@
       margin-top:10px;
     }
 
-    /* ====== MODAL ====== */
+    /* ====== ROI MODAL (crop tanlash) ====== */
     .modalBack{
       position:fixed; inset:0;
       background:rgba(0,0,0,.55);
@@ -289,10 +276,10 @@
       z-index:50;
     }
     .modal{
-      width:min(980px, 100%);
+      width:min(1060px, 100%);
       background:#fff;
       border-radius:18px;
-      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
       overflow:hidden;
       border:1px solid rgba(0,0,0,.08);
     }
@@ -304,7 +291,6 @@
       background:#0f2741;
       color:#fff;
       font-weight:1000;
-      font-size:16px;
     }
     .closeX{
       cursor:pointer;
@@ -313,10 +299,7 @@
       border-radius:10px;
       background:rgba(255,255,255,.12);
     }
-    .modalBody{
-      padding:12px;
-      background:#0f2741;
-    }
+    .modalBody{ padding:12px; background:#0f2741; }
     .cropWrap{
       background:#0b1320;
       border-radius:14px;
@@ -338,32 +321,238 @@
       background:#0f2741;
       flex-wrap:wrap;
     }
-    .btn.orange{ background:#f0a81a; color:#1b1200; }
-    .btn.white{ background:#eef3f8; color:#142033; box-shadow:none; }
+    .btn.orange{ background: linear-gradient(180deg, #ffbd3b, #f0a81a); color:#1b1200; }
 
-    @media (max-width: 1100px){
-      .hdr-top{ grid-template-columns: 1fr; }
-      .brand, .brand.right{ justify-content:center; text-align:center; }
-      .brandText{ justify-self:center; }
+    /* ====== LOGIN SCREEN ====== */
+    .gate{
+      position:fixed; inset:0;
+      background: radial-gradient(1100px 700px at 25% 0%, #f7fbff 0%, #eef4fb 55%, #eaf2ff 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:200;
+    }
+    .loginShell{
+      width:min(1080px, 100%);
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      min-height: 520px;
+    }
+    .brandPane{
+      padding:28px 30px;
+      background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 70%, #eef6ff 100%);
+      position:relative;
+    }
+    .brandPane:after{
+      content:"";
+      position:absolute; inset:auto -120px -140px auto;
+      width:520px; height:520px;
+      background: radial-gradient(circle at 30% 30%, rgba(11,97,179,.22), rgba(11,97,179,0) 60%);
+      transform: rotate(-10deg);
+      pointer-events:none;
+    }
+    .brandRow{
+      display:flex; align-items:center; gap:16px;
+    }
+    .brandLogo{
+      width:92px; height:92px;
+      border-radius:20px;
+      border:2px solid #e5eefb;
+      background:#fff;
+      object-fit:contain;
+      padding:8px;
+      box-shadow: 0 10px 22px rgba(10,30,60,.10);
+    }
+    .brandTitle{
+      margin:0;
+      font-size:40px;
+      letter-spacing:6px;
+      font-weight:1000;
+      line-height:1.05;
+    }
+    .brandSub{
+      margin-top:10px;
+      font-size:16px;
+      font-weight:800;
+      color:#17355a;
+    }
+    .brandNote{
+      margin-top:14px;
+      color:#3b4a5f;
+      font-size:14px;
+      line-height:1.55;
+      max-width: 520px;
+    }
+
+    .formPane{
+      padding:28px 26px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:12px;
+      background:#fff;
+    }
+    .loginTitle{
+      margin:0 0 6px;
+      font-size:18px;
+      font-weight:1000;
+      color:#13233b;
+      letter-spacing:.5px;
+    }
+    .loginBtn{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:0;
+      background: linear-gradient(180deg, #0f6fd0, var(--blue));
+      color:#fff;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow: 0 10px 20px rgba(11,97,179,.18);
+    }
+    .loginErr{
+      color:#b00020;
+      font-weight:800;
+      font-size:13px;
+      min-height: 18px;
+    }
+
+    /* ====== CONSENT MODAL ====== */
+    .consentBack{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:210;
+    }
+    .consent{
+      width:min(980px, 100%);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+      border:1px solid rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+    .consentHead{
+      padding:14px 16px;
+      background:#0f2741;
+      color:#fff;
+      font-weight:1000;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .consentBody{
+      padding:16px;
+      color:#13233b;
+      line-height:1.6;
+      font-size:14px;
+    }
+    .consentFooter{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-top:1px solid #e8eef7;
+      background:#fbfdff;
+      flex-wrap:wrap;
+    }
+    .checkRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      color:#17355a;
+    }
+
+    @media (max-width: 1050px){
+      .hdr-top{ grid-template-columns: 1fr; text-align:center; }
+      .logoBox, .logoBox.right{ justify-content:center; }
       .controls{ grid-template-columns: 1fr; }
       .grid{ grid-template-columns: 1fr; }
       .imgFrame{ min-height:360px; }
-      .title{ font-size:40px; letter-spacing:5px; }
+      .loginShell{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="header">
 
+  <!-- ===== LOGIN GATE ===== -->
+  <div class="gate" id="gate">
+    <div class="loginShell">
+      <div class="brandPane">
+        <div class="brandRow">
+          <img class="brandLogo" src="logo_left.png" alt="Logo">
+          <div>
+            <h1 class="brandTitle">QALQONSIMON AI</h1>
+            <div class="brandSub">UTT tasvirida tugunlarni baholash yordamchisi</div>
+          </div>
+        </div>
+        <div class="brandNote">
+          Bu demo-tizim <b>tadqiqot</b> va <b>klinika yordamchisi</b> sifatida mo‘ljallangan.
+          Natijalar yakuniy klinik qaror o‘rnini bosa olmaydi.
+        </div>
+      </div>
+
+      <div class="formPane">
+        <div class="loginTitle">Kirish</div>
+        <input class="inp" id="loginUser" placeholder="Login" autocomplete="username">
+        <input class="inp" id="loginPass" placeholder="Parol" type="password" autocomplete="current-password">
+        <div class="loginErr" id="loginErr"></div>
+        <button class="loginBtn" id="loginBtn">Kirish</button>
+        <div style="font-size:12px;color:#5a6b82;line-height:1.5;">
+          * Bu login demo uchun. Real himoya kerak bo‘lsa, keyin server-side auth qo‘shamiz.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONSENT MODAL ===== -->
+  <div class="consentBack" id="consentBack">
+    <div class="consent">
+      <div class="consentHead">
+        <div>Ogohlantirish va rozilik</div>
+        <div class="closeX" id="closeConsent">✕</div>
+      </div>
+      <div class="consentBody">
+        <b>Eslatma:</b> Bu AI modeli klinik qarorni belgilamaydi.
+        Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
+        <br><br>
+        Ushbu demo <b>tadqiqot</b> maqsadida ishlatiladi.
+      </div>
+      <div class="consentFooter">
+        <label class="checkRow">
+          <input type="checkbox" id="agreeCheck">
+          Yuqoridagilarni o‘qib chiqdim va roziman.
+        </label>
+        <button class="btn blue" id="agreeBtn" disabled>Davom etish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div class="wrap" id="app" style="display:none;">
+    <div class="header">
       <div class="hdr-top">
-        <div class="brand">
+        <div class="logoBox">
           <img class="logo" id="logoLeft" src="logo_left.png" alt="Logo left" />
-          <div class="brandText">Tibbiy radiologiya kafedrasi №2</div>
+          <div>
+            <div class="logoText">Tibbiy radiologiya kafedrasi №2</div>
+          </div>
         </div>
 
-        <div class="centerTitle">
+        <div class="titleBlock">
           <h1 class="title">QALQONSIMON AI</h1>
           <div class="subtitle">UTT tasvirida tugunlarni baholash yordamchisi</div>
           <div class="desc">
@@ -371,8 +560,10 @@
           </div>
         </div>
 
-        <div class="brand right">
-          <div class="brandText">Toshkent Davlat Tibbiyot Universiteti</div>
+        <div class="logoBox right">
+          <div>
+            <div class="logoText" style="text-align:right;">Toshkent Davlat Tibbiyot Universiteti</div>
+          </div>
           <img class="logo" id="logoRight" src="logo_right.png" alt="Logo right" />
         </div>
       </div>
@@ -383,10 +574,8 @@
           <input id="file" type="file" accept="image/*" />
           <div class="fileName" id="fileName">Fayl tanlanmadi</div>
         </div>
-
         <input class="inp" id="deviceName" placeholder="Apparat nomi (ixtiyoriy)" />
         <input class="inp" id="noduleSize" placeholder="Tugun o‘lchami (mm)" />
-
         <button class="btn green" id="analyzeBtn">Tahlil qilish</button>
         <button class="btn gray" id="resetBtn">Qayta tiklash</button>
       </div>
@@ -402,7 +591,8 @@
             <img id="mainImg" style="display:none;" alt="UTT rasm" />
           </div>
           <div class="note">
-            “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / qo‘lda belgilash / belgilanmasin). Tanlangandan keyin asosiy rasm ROI (crop) bilan almashadi.
+            “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / Qo‘lda belgilash / Belgilanmasin).
+            Tanlangandan keyin asosiy rasm ROI (crop) bilan almashadi.
           </div>
         </div>
       </div>
@@ -412,20 +602,20 @@
         <div class="cardHead">Natija</div>
         <div class="cardBody">
 
-          <div class="centered">
-            <div class="pillBig">TUGUN MALIGNLIK EHTIMOLI</div>
+          <div class="center">
+            <div class="pill">TUGUN MALIGNLIK EHTIMOLI</div>
           </div>
+          <div class="bigBox" id="riskBox">—</div>
 
-          <div class="bigBox" id="riskBox">Baholash keyin qo‘shiladi</div>
-
-          <div class="centered">
-            <div class="midPillBig">MODEL XULOSASI</div>
+          <div class="center" style="margin-top:14px;">
+            <div class="pill green">MODEL XULOSASI</div>
           </div>
+          <div class="bigBox small" id="summaryBox">Rasm yuklang va tahlil qiling</div>
 
-          <div class="bigBox summaryBox" id="summaryBox">Rasm yuklang va tahlil qiling</div>
-
-          <div class="note" style="margin-top:12px;">
-            <b>Eslatma:</b> Bu AI modeli klinik qarorni belgilamaydi. Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
+          <!-- KATTA, KO‘RINARLI ESLATMA -->
+          <div class="disclaimerBox">
+            <b>Eslatma:</b> Bu AI modeli klinik qarorni belgilamaydi.
+            Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
           </div>
 
         </div>
@@ -435,11 +625,11 @@
     <div class="footer">© Qalqonsimon AI — tadqiqot uchun demo modeli</div>
   </div>
 
-  <!-- MODAL -->
+  <!-- ROI MODAL -->
   <div class="modalBack" id="modalBack">
     <div class="modal">
       <div class="modalHead">
-        <div>ROI belgilash</div>
+        <div>ROI belgilash (crop)</div>
         <div class="closeX" id="closeModal">✕</div>
       </div>
 
@@ -459,11 +649,111 @@
 
 <script>
   // =========================
-  // API BASE (sizning HF Space)
+  // API BASE
   // =========================
   const API_BASE = "https://bekjonsattorov256-qalqonsimon-api.hf.space";
 
-  // Elements
+  // =========================
+  // DEMO LOGIN (o'zgartirish mumkin)
+  // =========================
+  const DEMO_USER = "doctor";
+  const DEMO_PASS = "12345";
+
+  // =========================
+  // Elements: Gate + Consent
+  // =========================
+  const gate = document.getElementById("gate");
+  const app = document.getElementById("app");
+  const loginUser = document.getElementById("loginUser");
+  const loginPass = document.getElementById("loginPass");
+  const loginBtn  = document.getElementById("loginBtn");
+  const loginErr  = document.getElementById("loginErr");
+
+  const consentBack = document.getElementById("consentBack");
+  const agreeCheck  = document.getElementById("agreeCheck");
+  const agreeBtn    = document.getElementById("agreeBtn");
+  const closeConsent = document.getElementById("closeConsent");
+
+  function showConsent(){
+    consentBack.style.display = "flex";
+    agreeCheck.checked = false;
+    agreeBtn.disabled = true;
+  }
+  function hideConsent(){
+    consentBack.style.display = "none";
+  }
+
+  function enterApp(){
+    gate.style.display = "none";
+    app.style.display = "block";
+  }
+
+  // login state
+  const LS_LOGIN = "qalqonsimon_logged_in";
+  const LS_AGREE = "qalqonsimon_agreed";
+
+  function boot(){
+    const logged = localStorage.getItem(LS_LOGIN) === "1";
+    const agreed = localStorage.getItem(LS_AGREE) === "1";
+
+    if(!logged){
+      gate.style.display = "flex";
+      app.style.display = "none";
+      return;
+    }
+    // logged in
+    if(!agreed){
+      gate.style.display = "none";
+      app.style.display = "none";
+      showConsent();
+      return;
+    }
+    // logged + agreed
+    hideConsent();
+    enterApp();
+  }
+
+  loginBtn.addEventListener("click", ()=>{
+    const u = (loginUser.value || "").trim();
+    const p = (loginPass.value || "").trim();
+
+    if(u === DEMO_USER && p === DEMO_PASS){
+      localStorage.setItem(LS_LOGIN, "1");
+      loginErr.textContent = "";
+      gate.style.display = "none";
+      app.style.display = "none";
+      showConsent();
+    } else {
+      loginErr.textContent = "Login yoki parol noto‘g‘ri.";
+    }
+  });
+
+  loginPass.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") loginBtn.click();
+  });
+
+  agreeCheck.addEventListener("change", ()=>{
+    agreeBtn.disabled = !agreeCheck.checked;
+  });
+
+  agreeBtn.addEventListener("click", ()=>{
+    localStorage.setItem(LS_AGREE, "1");
+    hideConsent();
+    enterApp();
+  });
+
+  closeConsent.addEventListener("click", ()=>{
+    // majburiy rozilik: yopsa ham appga kiritmaymiz
+    hideConsent();
+    gate.style.display = "flex";
+    app.style.display = "none";
+    localStorage.removeItem(LS_LOGIN);
+    localStorage.removeItem(LS_AGREE);
+  });
+
+  // =========================
+  // Elements: Main App
+  // =========================
   const fileEl = document.getElementById("file");
   const fileNameEl = document.getElementById("fileName");
   const mainImg = document.getElementById("mainImg");
@@ -485,21 +775,49 @@
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
 
+  // =========================
   // State
+  // =========================
   let originalFile = null;
   let originalImage = new Image();
   let imgLoaded = false;
 
-  // manual selection
+  // manual rect selection
   let selecting = false;
   let rect = null; // {x,y,w,h}
   let start = null;
 
+  // =========================
+  // Helpers
+  // =========================
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
     modalBack.style.display = "none";
-    selecting = false; start = null; rect = null;
+    selecting = false;
+    start = null;
+    rect = null;
     drawCanvas();
+  }
+
+  function drawCanvas(){
+    if(!imgLoaded) return;
+
+    const maxW = canvas.parentElement.clientWidth;
+    const scale = maxW / originalImage.width;
+
+    canvas.width = Math.floor(originalImage.width * scale);
+    canvas.height = Math.floor(originalImage.height * scale);
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
+
+    if(rect){
+      ctx.save();
+      ctx.strokeStyle = "#1da1ff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.restore();
+    }
   }
 
   function fileToImage(file){
@@ -516,39 +834,20 @@
     });
   }
 
-  function drawCanvas(){
-    if(!imgLoaded) return;
-    const maxW = canvas.parentElement.clientWidth;
-    const scale = maxW / originalImage.width;
-    canvas.width = Math.floor(originalImage.width * scale);
-    canvas.height = Math.floor(originalImage.height * scale);
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
-
-    if(rect){
-      ctx.save();
-      ctx.strokeStyle = "#1da1ff";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
-      ctx.restore();
-    }
+  async function callAnalyze(roiBlob){
+    const fd = new FormData();
+    fd.append("image", roiBlob, "roi.jpg");
+    const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
+    const j = await r.json();
+    return j;
   }
 
-  async function callAnalyze(file){
+  async function callDetect(file){
     const fd = new FormData();
     fd.append("image", file);
-    const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
-    return await r.json();
-  }
-
-  function setMainImageFromBlob(blob){
-    const url = URL.createObjectURL(blob);
-    mainImg.onload = () => {
-      mainImg.style.display = "block";
-      mainPlaceholder.style.display = "none";
-    };
-    mainImg.src = url;
+    const r = await fetch(`${API_BASE}/detect`, { method:"POST", body:fd });
+    const j = await r.json();
+    return j;
   }
 
   function cropFromRectScaledToOriginal(){
@@ -567,31 +866,43 @@
     return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
   }
 
-  function toPct(p){
-    const pct = Math.round(p * 100);
-    return `${pct}%`;
-  }
+  async function applyResultFromRoi(roiBlob){
+    // show ROI as main image
+    const url = URL.createObjectURL(roiBlob);
+    mainImg.onload = () => {
+      mainImg.style.display="block";
+      mainPlaceholder.style.display="none";
+    };
+    mainImg.src = url;
 
-  function triageUz(triage, p){
-    // triage kelishi: "benign" / "malignant" / "suspicious" bo'lishi mumkin
-    // agar backend faqat benign/malignant bersa ham ishlaydi
-    const pp = p ?? null;
-    if(triage === "malignant") return "Yomon xulqli (malignant)";
-    if(triage === "benign") return "Yaxshi xulqli (benign)";
-    if(triage === "suspicious") return "Shubhali (FNA/TAB)";
-    // fallback:
-    if(pp !== null){
-      if(pp < 0.40) return "Yaxshi xulqli (benign)";
-      if(pp > 0.75) return "Yomon xulqli (malignant)";
-      return "Shubhali (FNA/TAB)";
+    // call backend classify
+    try{
+      const res = await callAnalyze(roiBlob);
+      if(!res || res.ok === false){
+        riskBox.textContent = "—";
+        summaryBox.textContent = "Xatolik: natija olinmadi";
+        return;
+      }
+
+      const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
+      const pct = Math.round(p * 100);
+
+      riskBox.textContent = `${pct}%`;
+      summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
+
+    } catch(e){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: backend ulanmagan";
     }
-    return "Natija tayyor emas";
   }
 
-  // EVENTS
+  // =========================
+  // Events
+  // =========================
   fileEl.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
     if(!f) return;
+
     originalFile = f;
     fileNameEl.textContent = f.name;
 
@@ -602,7 +913,7 @@
     mainImg.style.display = "block";
     mainPlaceholder.style.display = "none";
 
-    riskBox.textContent = "Baholash keyin qo‘shiladi";
+    riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
   });
 
@@ -612,7 +923,7 @@
       return;
     }
     openModal();
-    setTimeout(drawCanvas, 60);
+    setTimeout(drawCanvas, 50);
   });
 
   resetBtn.addEventListener("click", ()=>{
@@ -624,7 +935,7 @@
     mainPlaceholder.style.display="block";
     mainImg.src = "";
 
-    riskBox.textContent = "Baholash keyin qo‘shiladi";
+    riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
 
     hideModal();
@@ -635,7 +946,7 @@
     if(e.target === modalBack) hideModal();
   });
 
-  // Manual selection on canvas
+  // Canvas manual selection
   canvas.addEventListener("mousedown", (e)=>{
     if(!selecting) return;
     const r = canvas.getBoundingClientRect();
@@ -643,17 +954,22 @@
     rect = { x:start.x, y:start.y, w:1, h:1 };
     drawCanvas();
   });
+
   canvas.addEventListener("mousemove", (e)=>{
     if(!selecting || !start) return;
     const r = canvas.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
+
     rect.w = x - start.x;
     rect.h = y - start.y;
+
     if(rect.w < 0){ rect.x = x; rect.w = Math.abs(rect.w); } else rect.x = start.x;
     if(rect.h < 0){ rect.y = y; rect.h = Math.abs(rect.h); } else rect.y = start.y;
+
     drawCanvas();
   });
+
   canvas.addEventListener("mouseup", async ()=>{
     if(!selecting || !rect) return;
     selecting = false;
@@ -662,49 +978,28 @@
 
     const roiBlob = await cropFromRectScaledToOriginal();
     hideModal();
-
-    // analyze on ROI blob by sending to /classify (faster) OR just local -> but we use /classify
-    // We'll call /classify endpoint:
-    const fd = new FormData();
-    fd.append("image", roiBlob, "roi.jpg");
-    const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
-    const js = await r.json();
-    if(!js.ok){
-      alert("Xatolik: backend javobi noto‘g‘ri.");
-      return;
-    }
-    const p = js.p_malignant;
-    riskBox.textContent = toPct(p);
-    summaryBox.textContent = triageUz(js.triage, p);
-
-    // replace main image with ROI
-    setMainImageFromBlob(roiBlob);
+    await applyResultFromRoi(roiBlob);
   });
 
-  // Modal buttons
   aiBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
     aiBtn.disabled = true;
     const old = aiBtn.textContent;
     aiBtn.textContent = "Kutib turing...";
+
     try{
-      const js = await callAnalyze(originalFile);
-      if(!js.ok){
+      const det = await callDetect(originalFile);
+      if(!det || det.ok === false){
         alert("Xatolik: backend javobi noto‘g‘ri.");
         return;
       }
-      if(!js.found){
+      if(!det.found){
         alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
         return;
       }
 
-      const p = js.p_malignant;
-      riskBox.textContent = toPct(p);
-      summaryBox.textContent = triageUz(js.triage, p);
-
-      // crop on client using bbox
-      const [x1,y1,x2,y2] = js.bbox;
+      const [x1,y1,x2,y2] = det.bbox;
       const w = Math.max(1, x2 - x1);
       const h = Math.max(1, y2 - y1);
 
@@ -714,8 +1009,8 @@
       tctx.drawImage(originalImage, x1, y1, w, h, 0, 0, w, h);
 
       const roiBlob = await new Promise(res => tmp.toBlob(res, "image/jpeg", 0.95));
-      setMainImageFromBlob(roiBlob); // asosiy frame ROI bilan almashadi
       hideModal();
+      await applyResultFromRoi(roiBlob);
 
     } finally {
       aiBtn.disabled = false;
@@ -724,19 +1019,11 @@
   });
 
   noCropBtn.addEventListener("click", async ()=>{
+    // crop qilmasdan classify qilish (ixtiyoriy)
+    // bu yerda original rasmni ROI sifatida yuboramiz
     hideModal();
-    // full image classify (optional)
-    const fd = new FormData();
-    fd.append("image", originalFile, originalFile.name);
-    const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
-    const js = await r.json();
-    if(js.ok){
-      const p = js.p_malignant;
-      riskBox.textContent = toPct(p);
-      summaryBox.textContent = triageUz(js.triage, p);
-    } else {
-      summaryBox.textContent = "ROI tanlanmadi";
-    }
+    const blob = await fetch(originalImage.src).then(r=>r.blob());
+    await applyResultFromRoi(blob);
   });
 
   manualCropBtn.addEventListener("click", ()=>{
@@ -750,6 +1037,9 @@
   window.addEventListener("resize", ()=>{
     if(modalBack.style.display === "flex") drawCanvas();
   });
+
+  // start
+  boot();
 </script>
 </body>
 </html>
