@@ -27,7 +27,7 @@
 
     /* ====== APP LAYOUT ====== */
     .wrap{
-      max-width: 1480px; /* ENIGA KENGAYTIRILDI */
+      max-width: 1920px; /* ENIGA YANADA KENGAYTIRILDI */
       margin: 18px auto 26px;
       padding: 0 16px;
     }
@@ -52,7 +52,7 @@
 
     .hdr-top{
       display:grid;
-      grid-template-columns: 320px 1fr 320px; /* chap/ong blok kattaroq */
+      grid-template-columns: 320px 1fr 320px;
       align-items:center;
       gap:14px;
     }
@@ -65,7 +65,7 @@
     }
     .logoBox.right{ justify-content:flex-end; }
     .logo{
-      width:68px; height:68px; /* LOGO KATTAROQ */
+      width:68px; height:68px;
       border-radius:16px;
       border:2px solid #e5eefb;
       object-fit:contain;
@@ -74,19 +74,13 @@
       box-shadow: 0 8px 20px rgba(10,30,60,.08);
     }
     .logoText{
-      font-size:18px; /* TAGIDAGI YOZUV KATTAROQ */
+      font-size:18px;
       font-weight:900;
       color:#13233b;
       line-height:1.15;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-    }
-    .logoText.small{
-      font-size:13px;
-      font-weight:700;
-      color:#3a4a63;
-      margin-top:2px;
     }
 
     .titleBlock{ text-align:center; }
@@ -183,7 +177,7 @@
       background:#f2f7ff;
       border:1px solid #dfe9f7;
       border-radius:18px;
-      min-height: 540px; /* kattaroq */
+      min-height: 540px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -208,7 +202,6 @@
       line-height:1.45;
     }
 
-    /* RESULT */
     .center{ text-align:center; }
 
     .pill{
@@ -218,7 +211,7 @@
       background: linear-gradient(180deg, #0f6fd0, #0b5aa6);
       color:#fff;
       font-weight:1000;
-      font-size:15px; /* kattaroq */
+      font-size:15px;
       margin:8px 0 12px;
       box-shadow: 0 10px 22px rgba(11,97,179,.18);
     }
@@ -250,11 +243,11 @@
       border-radius:16px;
       border:1px solid #ffe2b6;
       background: linear-gradient(180deg, #fff7e9, #fff2dd);
-      padding:14px 14px;
+      padding:16px 16px;
       color:#5a3a00;
-      font-weight:900;
-      font-size:15px; /* KATTA KO‘RINADI */
-      line-height:1.45;
+      font-weight:1000;
+      font-size:16px; /* KATTAROQ QILDIM */
+      line-height:1.55;
     }
     .disclaimerBox b{ color:#3a2500; }
 
@@ -265,7 +258,7 @@
       margin-top:10px;
     }
 
-    /* ====== ROI MODAL (crop tanlash) ====== */
+    /* ====== ROI MODAL ====== */
     .modalBack{
       position:fixed; inset:0;
       background:rgba(0,0,0,.55);
@@ -344,11 +337,20 @@
       grid-template-columns: 1.2fr .8fr;
       min-height: 520px;
     }
+
+    /* ✅ MUHIM: BRAND PANE MARKAZGA */
     .brandPane{
       padding:28px 30px;
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 70%, #eef6ff 100%);
       position:relative;
+
+      display:flex;                 /* NEW */
+      flex-direction:column;        /* NEW */
+      justify-content:center;        /* NEW (vertikal markaz) */
+      align-items:center;            /* NEW (gorizontal markaz) */
+      text-align:center;             /* NEW */
     }
+
     .brandPane:after{
       content:"";
       position:absolute; inset:auto -120px -140px auto;
@@ -357,8 +359,11 @@
       transform: rotate(-10deg);
       pointer-events:none;
     }
+
     .brandRow{
       display:flex; align-items:center; gap:16px;
+      justify-content:center; /* NEW */
+      z-index:1;
     }
     .brandLogo{
       width:92px; height:92px;
@@ -381,6 +386,7 @@
       font-size:16px;
       font-weight:800;
       color:#17355a;
+      z-index:1;
     }
     .brandNote{
       margin-top:14px;
@@ -388,6 +394,7 @@
       font-size:14px;
       line-height:1.55;
       max-width: 520px;
+      z-index:1;
     }
 
     .formPane{
@@ -452,10 +459,10 @@
       gap:10px;
     }
     .consentBody{
-      padding:16px;
+      padding:18px 16px;
       color:#13233b;
-      line-height:1.6;
-      font-size:14px;
+      line-height:1.7;
+      font-size:15px; /* biroz kattaroq */
     }
     .consentFooter{
       display:flex;
@@ -482,6 +489,8 @@
       .grid{ grid-template-columns: 1fr; }
       .imgFrame{ min-height:360px; }
       .loginShell{ grid-template-columns: 1fr; }
+      .brandRow{ flex-direction:column; }
+      .brandTitle{ letter-spacing:4px; }
     }
   </style>
 </head>
@@ -496,12 +505,10 @@
           <img class="brandLogo" src="logo_left.png" alt="Logo">
           <div>
             <h1 class="brandTitle">QALQONSIMON AI</h1>
-            <div class="brandSub">UTT tasvirida tugunlarni baholash yordamchisi</div>
           </div>
         </div>
-        <div class="brandNote">
- 
-        </div>
+        <div class="brandSub">UTT tasvirida tugunlarni baholash yordamchisi</div>
+        <div class="brandNote"></div>
       </div>
 
       <div class="formPane">
@@ -524,19 +531,20 @@
         <div>Ogohlantirish va rozilik</div>
         <div class="closeX" id="closeConsent">✕</div>
       </div>
+
+      <!-- ✅ BU YER HTML TOZALANDI -->
       <div class="consentBody">
-                     </p>.
-      Men “Qalqonsimon AI” dasturi tijorat (klinika) foydalanish uchun mo‘ljallanmagan,
-      faqat ilmiy-tadqiqot (research) maqsadidagi demo ekanligini to‘liq tushunaman.
-      <br><br>
-      Ushbu dastur klinik qarorni belgilamaydi.
-      Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
-      <br><br>
-      Agar dasturdan tadqiqotdan tashqari maqsadlarda foydalanish oqibatida huquqiy yoki boshqa
-      muammolar yuzaga kelsa, barcha javobgarlik (shu jumladan huquqiy javobgarlik)
-      to‘liq foydalanuvchi zimmasida ekanligini tasdiqlayman.
-    </p>.
+        Men “Qalqonsimon AI” dasturi tijorat (klinika) foydalanish uchun mo‘ljallanmagan,
+        faqat ilmiy-tadqiqot (research) maqsadidagi demo ekanligini to‘liq tushunaman.
+        <br><br>
+        Ushbu dastur klinik qarorni belgilamaydi.
+        Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
+        <br><br>
+        Agar dasturdan tadqiqotdan tashqari maqsadlarda foydalanish oqibatida huquqiy yoki boshqa
+        muammolar yuzaga kelsa, barcha javobgarlik (shu jumladan huquqiy javobgarlik)
+        to‘liq foydalanuvchi zimmasida ekanligini tasdiqlayman.
       </div>
+
       <div class="consentFooter">
         <label class="checkRow">
           <input type="checkbox" id="agreeCheck">
@@ -609,7 +617,7 @@
         <div class="cardBody">
 
           <div class="center">
-            <div class="pill">TUGUN MALIGNLIK EHTIMOLI</div>
+            <div class="pill">TUGUN YOMON SIFATLILIK EHTIMOLI</div>
           </div>
           <div class="bigBox" id="riskBox">—</div>
 
@@ -618,7 +626,6 @@
           </div>
           <div class="bigBox small" id="summaryBox">Rasm yuklang va tahlil qiling</div>
 
-          <!-- KATTA, KO‘RINARLI ESLATMA -->
           <div class="disclaimerBox">
             <b>Eslatma:</b> Bu AI modeli klinik qarorni belgilamaydi.
             Yakuniy xulosa shifokor tomonidan klinik holat va qo‘shimcha tekshiruvlar asosida beriladi.
@@ -659,15 +666,11 @@
   // =========================
   const API_BASE = "https://bekjonsattorov256-qalqonsimon-api.hf.space";
 
-  // =========================
-  // DEMO LOGIN (o'zgartirish mumkin)
-  // =========================
+  // DEMO LOGIN
   const DEMO_USER = "doctor";
   const DEMO_PASS = "12345";
 
-  // =========================
   // Elements: Gate + Consent
-  // =========================
   const gate = document.getElementById("gate");
   const app = document.getElementById("app");
   const loginUser = document.getElementById("loginUser");
@@ -694,7 +697,6 @@
     app.style.display = "block";
   }
 
-  // login state
   const LS_LOGIN = "qalqonsimon_logged_in";
   const LS_AGREE = "qalqonsimon_agreed";
 
@@ -707,14 +709,12 @@
       app.style.display = "none";
       return;
     }
-    // logged in
     if(!agreed){
       gate.style.display = "none";
       app.style.display = "none";
       showConsent();
       return;
     }
-    // logged + agreed
     hideConsent();
     enterApp();
   }
@@ -749,7 +749,6 @@
   });
 
   closeConsent.addEventListener("click", ()=>{
-    // majburiy rozilik: yopsa ham appga kiritmaymiz
     hideConsent();
     gate.style.display = "flex";
     app.style.display = "none";
@@ -757,9 +756,7 @@
     localStorage.removeItem(LS_AGREE);
   });
 
-  // =========================
-  // Elements: Main App
-  // =========================
+  // ==== ROI / CLASSIFY code (sizniki) ====
   const fileEl = document.getElementById("file");
   const fileNameEl = document.getElementById("fileName");
   const mainImg = document.getElementById("mainImg");
@@ -781,21 +778,14 @@
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
 
-  // =========================
-  // State
-  // =========================
   let originalFile = null;
   let originalImage = new Image();
   let imgLoaded = false;
 
-  // manual rect selection
   let selecting = false;
-  let rect = null; // {x,y,w,h}
+  let rect = null;
   let start = null;
 
-  // =========================
-  // Helpers
-  // =========================
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
     modalBack.style.display = "none";
@@ -807,7 +797,6 @@
 
   function drawCanvas(){
     if(!imgLoaded) return;
-
     const maxW = canvas.parentElement.clientWidth;
     const scale = maxW / originalImage.width;
 
@@ -844,16 +833,14 @@
     const fd = new FormData();
     fd.append("image", roiBlob, "roi.jpg");
     const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
-    const j = await r.json();
-    return j;
+    return await r.json();
   }
 
   async function callDetect(file){
     const fd = new FormData();
     fd.append("image", file);
     const r = await fetch(`${API_BASE}/detect`, { method:"POST", body:fd });
-    const j = await r.json();
-    return j;
+    return await r.json();
   }
 
   function cropFromRectScaledToOriginal(){
@@ -873,7 +860,6 @@
   }
 
   async function applyResultFromRoi(roiBlob){
-    // show ROI as main image
     const url = URL.createObjectURL(roiBlob);
     mainImg.onload = () => {
       mainImg.style.display="block";
@@ -881,7 +867,6 @@
     };
     mainImg.src = url;
 
-    // call backend classify
     try{
       const res = await callAnalyze(roiBlob);
       if(!res || res.ok === false){
@@ -889,22 +874,17 @@
         summaryBox.textContent = "Xatolik: natija olinmadi";
         return;
       }
-
       const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
       const pct = Math.round(p * 100);
 
       riskBox.textContent = `${pct}%`;
       summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
-
     } catch(e){
       riskBox.textContent = "—";
       summaryBox.textContent = "Xatolik: backend ulanmagan";
     }
   }
 
-  // =========================
-  // Events
-  // =========================
   fileEl.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
     if(!f) return;
@@ -952,7 +932,6 @@
     if(e.target === modalBack) hideModal();
   });
 
-  // Canvas manual selection
   canvas.addEventListener("mousedown", (e)=>{
     if(!selecting) return;
     const r = canvas.getBoundingClientRect();
@@ -1017,7 +996,6 @@
       const roiBlob = await new Promise(res => tmp.toBlob(res, "image/jpeg", 0.95));
       hideModal();
       await applyResultFromRoi(roiBlob);
-
     } finally {
       aiBtn.disabled = false;
       aiBtn.textContent = old;
@@ -1025,8 +1003,6 @@
   });
 
   noCropBtn.addEventListener("click", async ()=>{
-    // crop qilmasdan classify qilish (ixtiyoriy)
-    // bu yerda original rasmni ROI sifatida yuboramiz
     hideModal();
     const blob = await fetch(originalImage.src).then(r=>r.blob());
     await applyResultFromRoi(blob);
@@ -1044,10 +1020,7 @@
     if(modalBack.style.display === "flex") drawCanvas();
   });
 
-  // start
   boot();
 </script>
 </body>
 </html>
-
-
