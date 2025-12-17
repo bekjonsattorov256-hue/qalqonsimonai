@@ -258,20 +258,30 @@
       margin-top:10px;
     }
 
-    /* ====== LOGOUT BUTTON ====== */
+    /* ====== LOGOUT BUTTON (BASE) ====== */
     .logoutBtn{
-      margin-top:10px;
-      padding:10px 14px;
-      border-radius:12px;
+      padding:12px 18px;
+      border-radius:999px;
       border:1px solid #d6e2f2;
       background:#fff;
       color:#0b4fa2;
       font-weight:1000;
       cursor:pointer;
-      box-shadow: 0 8px 18px rgba(10,30,60,.08);
-      width: 120px;
+      box-shadow: 0 10px 22px rgba(10,30,60,.12);
+      width:auto;
     }
     .logoutBtn:hover{ filter:brightness(.98); }
+    .logoutBtn:active{ transform:scale(.97); }
+
+    /* ====== ✅ FLOATING LOGOUT (BOTTOM RIGHT) ====== */
+    .floatingLogout{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      z-index:350;
+      background: linear-gradient(180deg, #ffffff, #f2f6ff);
+      box-shadow: 0 14px 32px rgba(10,30,60,.18);
+    }
 
     /* ====== ROI MODAL ====== */
     .modalBack{
@@ -330,6 +340,7 @@
       flex-wrap:wrap;
     }
     .btn.orange{ background: linear-gradient(180deg, #ffbd3b, #f0a81a); color:#1b1200; }
+    .btn.white{ background: linear-gradient(180deg, #ffffff, #edf3ff); color:#0b2b55; border:1px solid rgba(255,255,255,.35); }
 
     /* ====== LOGIN SCREEN ====== */
     .gate{
@@ -495,7 +506,6 @@
       .loginShell{ grid-template-columns: 1fr; }
       .brandRow{ flex-direction:column; }
       .brandTitle{ letter-spacing:4px; }
-      .logoutBtn{ width:auto; }
     }
   </style>
 </head>
@@ -578,11 +588,10 @@
           </div>
         </div>
 
-        <!-- ✅ RIGHT: universitet + logout -->
+        <!-- ✅ RIGHT: universitet (logout endi pastda) -->
         <div class="logoBox right">
           <div style="text-align:right;">
             <div class="logoText">Toshkent Davlat Tibbiyot Universiteti</div>
-            <button class="logoutBtn" id="logoutBtn" type="button">Chiqish</button>
           </div>
           <img class="logo" id="logoRight" src="logo_right.png" alt="Logo right" />
         </div>
@@ -664,6 +673,11 @@
     </div>
   </div>
 
+  <!-- ✅ FLOATING LOGOUT BUTTON (BOTTOM RIGHT) -->
+  <button class="logoutBtn floatingLogout" id="logoutBtn" type="button" style="display:none;">
+    Chiqish
+  </button>
+
 <script>
   // =========================
   // API BASE
@@ -687,10 +701,14 @@
   const agreeBtn    = document.getElementById("agreeBtn");
   const closeConsent = document.getElementById("closeConsent");
 
+  // ✅ floating logout
+  const logoutBtn = document.getElementById("logoutBtn");
+
   function showConsent(){
     consentBack.style.display = "flex";
     agreeCheck.checked = false;
     agreeBtn.disabled = true;
+    if(logoutBtn) logoutBtn.style.display = "none";
   }
   function hideConsent(){
     consentBack.style.display = "none";
@@ -699,6 +717,7 @@
   function enterApp(){
     gate.style.display = "none";
     app.style.display = "block";
+    if(logoutBtn) logoutBtn.style.display = "block"; // ✅ app ichida ko‘rinadi
   }
 
   const LS_LOGIN = "qalqonsimon_logged_in";
@@ -712,6 +731,8 @@
     gate.style.display = "flex";
     app.style.display = "none";
 
+    if(logoutBtn) logoutBtn.style.display = "none"; // ✅ chiqishda yashiriladi
+
     if(loginUser) loginUser.value = "";
     if(loginPass) loginPass.value = "";
     if(loginErr) loginErr.textContent = "";
@@ -724,11 +745,13 @@
     if(!logged){
       gate.style.display = "flex";
       app.style.display = "none";
+      if(logoutBtn) logoutBtn.style.display = "none";
       return;
     }
     if(!agreed){
       gate.style.display = "none";
       app.style.display = "none";
+      if(logoutBtn) logoutBtn.style.display = "none";
       showConsent();
       return;
     }
@@ -746,6 +769,7 @@
       loginErr.textContent = "";
       gate.style.display = "none";
       app.style.display = "none";
+      if(logoutBtn) logoutBtn.style.display = "none";
       showConsent();
     } else {
       loginErr.textContent = "Login yoki parol noto‘g‘ri.";
@@ -771,8 +795,7 @@
     doLogout();
   });
 
-  // ✅ Logout tugmasi
-  const logoutBtn = document.getElementById("logoutBtn");
+  // ✅ Logout tugmasi (floating)
   if(logoutBtn){
     logoutBtn.addEventListener("click", ()=>{
       doLogout();
@@ -1074,4 +1097,3 @@
 </script>
 </body>
 </html>
-
