@@ -602,7 +602,7 @@
 
 <script>
   // =========================
-  // ✅ API BASE (o'zgarmadi)
+  // API BASE
   // =========================
   const API_BASE = "https://bekjonsattorov256-qalqonsimon-api.hf.space";
 
@@ -747,25 +747,65 @@
   });
 
   // =========================
-  // MAIN UI
+  // ROI / ANALYZE UI
   // =========================
   const fileEl = document.getElementById("file");
   const fileNameEl = document.getElementById("fileName");
   const mainImg = document.getElementById("mainImg");
   const mainPlaceholder = document.getElementById("mainPlaceholder");
+
   const analyzeBtn = document.getElementById("analyzeBtn");
   const resetBtn = document.getElementById("resetBtn");
+
+  const modalBack = document.getElementById("modalBack");
+  const closeModal = document.getElementById("closeModal");
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  const aiBtn = document.getElementById("aiBtn");
+  const noCropBtn = document.getElementById("noCropBtn");
+  const manualCropBtn = document.getElementById("manualCropBtn");
 
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
 
-  // ✅ bbox overlay canvas
-  const bboxCanvas = document.getElementById("bboxCanvas");
-  const bboxCtx = bboxCanvas.getContext("2d");
-
   let originalFile = null;
   let originalImage = new Image();
   let imgLoaded = false;
+
+  let selecting = false;
+  let rect = null;
+  let start = null;
+
+  function openModal(){ modalBack.style.display = "flex"; }
+  function hideModal(){
+    modalBack.style.display = "none";
+    selecting = false;
+    start = null;
+    rect = null;
+    drawCanvas();
+  }
+
+  function drawCanvas(){
+    if(!imgLoaded) return;
+    const maxW = canvas.parentElement.clientWidth;
+    const scale = maxW / originalImage.width;
+
+    canvas.width = Math.floor(originalImage.width * scale);
+    canvas.height = Math.floor(originalImage.height * scale);
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
+
+    if(rect){
+      ctx.save();
+      ctx.strokeStyle = "#1da1ff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.restore();
+    }
+  }
 
   function fileToImage(file){
     return new Promise((resolve,reject)=>{
@@ -781,113 +821,78 @@
     });
   }
 
-  function clearBBox(){
-    bboxCanvas.style.display = "none";
-    bboxCtx.clearRect(0,0,bboxCanvas.width,bboxCanvas.height);
-  }
-
-  function drawBBoxOnMainImage(bbox){
-    if(!imgLoaded || !bbox) return;
-
-    // canvas same size as frame
-    const frame = document.getElementById("mainFrame");
-    const rect = frame.getBoundingClientRect();
-    bboxCanvas.width = Math.floor(rect.width);
-    bboxCanvas.height = Math.floor(rect.height);
-
-    bboxCtx.clearRect(0,0,bboxCanvas.width,bboxCanvas.height);
-
-    // mainImg object-fit: contain => hisoblash
-    const cw = bboxCanvas.width;
-    const ch = bboxCanvas.height;
-    const iw = originalImage.width;
-    const ih = originalImage.height;
-
-    const scale = Math.min(cw / iw, ch / ih);
-    const drawW = iw * scale;
-    const drawH = ih * scale;
-    const offX = (cw - drawW) / 2;
-    const offY = (ch - drawH) / 2;
-
-    // bbox original image koordinatada
-    const [x1,y1,x2,y2] = bbox;
-    const bx = offX + x1 * scale;
-    const by = offY + y1 * scale;
-    const bw = (x2 - x1) * scale;
-    const bh = (y2 - y1) * scale;
-
-    bboxCtx.save();
-    bboxCtx.strokeStyle = "#00d4ff";
-    bboxCtx.lineWidth = 3;
-    bboxCtx.strokeRect(bx, by, bw, bh);
-    bboxCtx.restore();
-
-    bboxCanvas.style.display = "block";
-  }
-
-  // ✅ YANGI FUNKSIYA: faqat /analyze ishlaydi
-  async function callAnalyzeFullImage(file){
+  // ✅ 1) Manual crop -> /classify
+  async function callClassifyRoi(roiBlob){
     const fd = new FormData();
-    fd.append("image", file);
-
-    const r = await fetch(`${API_BASE}/analyze`, {
-      method: "POST",
-      body: fd
-    });
+    fd.append("image", roiBlob, "roi.jpg");
+    const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
     return await r.json();
   }
 
-  async function applyAnalyzeResult(file){
-    try{
-      // UI: rasmni ko'rsatamiz (original rasm)
-      const img = await fileToImage(file);
-      originalImage = img;
-      imgLoaded = true;
-
-      mainImg.src = originalImage.src;
-      mainImg.style.display = "block";
-      mainPlaceholder.style.display = "none";
-
-      clearBBox();
-      riskBox.textContent = "—";
-      summaryBox.textContent = "Tahlil qilinmoqda...";
-
-      const res = await callAnalyzeFullImage(file);
-      console.log("ANALYZE JSON:", res); // ✅ siz tekshirish uchun
-
-      if(!res || res.ok === false){
-        riskBox.textContent = "—";
-        summaryBox.textContent = "Xatolik: natija olinmadi";
-        return;
-      }
-      if(!res.found){
-        riskBox.textContent = "—";
-        summaryBox.textContent = "AI tugun topolmadi";
-        return;
-      }
-
-      const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
-      const pct = Math.round(p * 100);
-
-      riskBox.textContent = `${pct}%`;
-
-      // triage matnini chiroyli ko'rsatamiz
-      const t = (res.triage || "").toLowerCase();
-      if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
-      else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
-      else if(t === "malignant") summaryBox.textContent = "YOMON SIFATLI";
-      else summaryBox.textContent = res.triage || "Natija tayyor";
-
-      // bbox chizamiz
-      if(res.bbox) drawBBoxOnMainImage(res.bbox);
-
-    } catch(e){
-      riskBox.textContent = "—";
-      summaryBox.textContent = "Xatolik: backend ulanmagan";
-      console.error(e);
-    }
+  // ✅ 2) AI pipeline -> /analyze (full image)
+  async function callAnalyzeFull(file){
+    const fd = new FormData();
+    fd.append("image", file);
+    const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
+    return await r.json();
   }
 
+  function cropFromRectScaledToOriginal(){
+    const scale = originalImage.width / canvas.width;
+    const x = Math.round(rect.x * scale);
+    const y = Math.round(rect.y * scale);
+    const w = Math.round(rect.w * scale);
+    const h = Math.round(rect.h * scale);
+
+    const tmp = document.createElement("canvas");
+    tmp.width = Math.max(1,w);
+    tmp.height = Math.max(1,h);
+    const tctx = tmp.getContext("2d");
+    tctx.drawImage(originalImage, x, y, w, h, 0, 0, w, h);
+
+    return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
+  }
+
+  function cropFromBBoxOriginal(bbox){
+    const [x1,y1,x2,y2] = bbox;
+    const w = Math.max(1, x2 - x1);
+    const h = Math.max(1, y2 - y1);
+
+    const tmp = document.createElement("canvas");
+    tmp.width = w; tmp.height = h;
+    const tctx = tmp.getContext("2d");
+    tctx.drawImage(originalImage, x1, y1, w, h, 0, 0, w, h);
+
+    return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
+  }
+
+  function setResultUI(res){
+    if(!res || res.ok === false){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: natija olinmadi";
+      return;
+    }
+    const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
+    const pct = Math.round(p * 100);
+    riskBox.textContent = `${pct}%`;
+
+    const t = (res.triage || "").toLowerCase();
+    if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
+    else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
+    else if(t === "malignant") summaryBox.textContent = "YOMON SIFATLI";
+    else summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
+  }
+
+  async function showRoiOnMain(roiBlob){
+    const url = URL.createObjectURL(roiBlob);
+    mainImg.onload = () => {
+      mainImg.style.display="block";
+      mainPlaceholder.style.display="none";
+    };
+    mainImg.src = url;
+  }
+
+  // ===== FILE LOAD =====
   fileEl.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
     if(!f) return;
@@ -895,7 +900,6 @@
     originalFile = f;
     fileNameEl.textContent = f.name;
 
-    // ko'rsatamiz
     originalImage = await fileToImage(f);
     imgLoaded = true;
 
@@ -903,22 +907,24 @@
     mainImg.style.display = "block";
     mainPlaceholder.style.display = "none";
 
-    clearBBox();
     riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
 
     resetIdleTimer();
   });
 
-  analyzeBtn.addEventListener("click", async ()=>{
+  // ===== OPEN ROI MODAL =====
+  analyzeBtn.addEventListener("click", ()=>{
     if(!originalFile){
       alert("Avval rasm yuklang.");
       return;
     }
+    openModal();
+    setTimeout(drawCanvas, 50);
     resetIdleTimer();
-    await applyAnalyzeResult(originalFile);
   });
 
+  // ===== RESET =====
   resetBtn.addEventListener("click", ()=>{
     originalFile = null;
     fileEl.value = "";
@@ -928,21 +934,145 @@
     mainPlaceholder.style.display="block";
     mainImg.src = "";
 
-    clearBBox();
-
     riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
 
+    hideModal();
     resetIdleTimer();
   });
 
+  closeModal.addEventListener("click", hideModal);
+  modalBack.addEventListener("click", (e)=>{
+    if(e.target === modalBack) hideModal();
+  });
+
+  // =========================
+  // MANUAL CROP (drag)
+  // =========================
+  canvas.addEventListener("mousedown", (e)=>{
+    if(!selecting) return;
+    const r = canvas.getBoundingClientRect();
+    start = { x: e.clientX - r.left, y: e.clientY - r.top };
+    rect = { x:start.x, y:start.y, w:1, h:1 };
+    drawCanvas();
+  });
+
+  canvas.addEventListener("mousemove", (e)=>{
+    if(!selecting || !start) return;
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+
+    rect.w = x - start.x;
+    rect.h = y - start.y;
+
+    if(rect.w < 0){ rect.x = x; rect.w = Math.abs(rect.w); } else rect.x = start.x;
+    if(rect.h < 0){ rect.y = y; rect.h = Math.abs(rect.h); } else rect.y = start.y;
+
+    drawCanvas();
+  });
+
+  canvas.addEventListener("mouseup", async ()=>{
+    if(!selecting || !rect) return;
+    selecting = false;
+    start = null;
+    drawCanvas();
+
+    const roiBlob = await cropFromRectScaledToOriginal();
+    hideModal();
+
+    // ✅ manual ROI -> /classify
+    summaryBox.textContent = "Tahlil qilinmoqda...";
+    const res = await callClassifyRoi(roiBlob);
+    setResultUI(res);
+
+    // ROI ko‘rsatib qo‘yamiz (sizga yoqadigan format)
+    await showRoiOnMain(roiBlob);
+  });
+
+  // =========================
+  // BUTTONS
+  // =========================
+
+  // ✅ AI bilan belgilash -> /analyze (backend o'zi crop qiladi)
+  aiBtn.addEventListener("click", async ()=>{
+    if(!originalFile) return;
+
+    aiBtn.disabled = true;
+    const old = aiBtn.textContent;
+    aiBtn.textContent = "Kutib turing...";
+
+    try{
+      summaryBox.textContent = "AI tahlil qilmoqda...";
+      const res = await callAnalyzeFull(originalFile);
+      console.log("ANALYZE JSON:", res);
+
+      if(!res || res.ok === false){
+        alert("Xatolik: backend javobi noto‘g‘ri.");
+        return;
+      }
+      if(!res.found){
+        alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
+        return;
+      }
+
+      // ✅ natijani UI ga chiqaramiz (p_mean, triage)
+      setResultUI(res);
+
+      // ✅ bbox asosida ROI ni faqat KO‘RISH UCHUN crop qilib ko'rsatamiz
+      // (natija backenddan olingan)
+      const roiBlob = await cropFromBBoxOriginal(res.bbox);
+      hideModal();
+      await showRoiOnMain(roiBlob);
+
+    } finally {
+      aiBtn.disabled = false;
+      aiBtn.textContent = old;
+    }
+  });
+
+  // ✅ Belgilanmasin -> ham /analyze (AI o'zi topadi)
+  noCropBtn.addEventListener("click", async ()=>{
+    if(!originalFile) return;
+    hideModal();
+
+    summaryBox.textContent = "AI tahlil qilmoqda...";
+    const res = await callAnalyzeFull(originalFile);
+    console.log("ANALYZE JSON:", res);
+
+    if(!res || res.ok === false){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: natija olinmadi";
+      return;
+    }
+    if(!res.found){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "AI tugun topolmadi";
+      return;
+    }
+    setResultUI(res);
+
+    // original rasmni qayta ko‘rsatamiz
+    mainImg.src = originalImage.src;
+    mainImg.style.display="block";
+    mainPlaceholder.style.display="none";
+  });
+
+  // ✅ Qo'lda belgilash (manual drag) ON
+  manualCropBtn.addEventListener("click", ()=>{
+    selecting = true;
+    rect = null;
+    start = null;
+    drawCanvas();
+    alert("ROI ni sichqoncha bilan tortib belgilang (drag).");
+  });
+
   window.addEventListener("resize", ()=>{
-    // resize bo'lsa bbox qayta chizish uchun, lekin faqat oldingi bbox saqlanmagan.
-    // oddiy: clear qilamiz
-    clearBBox();
+    if(modalBack.style.display === "flex") drawCanvas();
   });
 
   boot();
 </script>
 </body>
 </html>
+
