@@ -25,6 +25,7 @@
       color:#0b1320;
     }
 
+    /* ====== APP LAYOUT ====== */
     .wrap{
       max-width: 1680px;
       margin: 18px auto 26px;
@@ -194,16 +195,6 @@
       text-align:center;
       font-weight:800;
     }
-
-    /* ✅ bbox overlay */
-    .bboxOverlay{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      display:none;
-      border-radius:18px;
-    }
-
     .note{
       margin-top:10px;
       color:#415166;
@@ -267,6 +258,7 @@
       margin-top:10px;
     }
 
+    /* ====== LOGOUT BUTTON (BASE) ====== */
     .logoutBtn{
       padding:12px 18px;
       border-radius:999px;
@@ -281,6 +273,7 @@
     .logoutBtn:hover{ filter:brightness(.98); }
     .logoutBtn:active{ transform:scale(.97); }
 
+    /* ====== FLOATING LOGOUT (BOTTOM RIGHT) ====== */
     .floatingLogout{
       position:fixed;
       right:22px;
@@ -289,6 +282,65 @@
       background: linear-gradient(180deg, #ffffff, #f2f6ff);
       box-shadow: 0 14px 32px rgba(10,30,60,.18);
     }
+
+    /* ====== ROI MODAL ====== */
+    .modalBack{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    .modal{
+      width:min(1060px, 100%);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    .modalHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      background:#0f2741;
+      color:#fff;
+      font-weight:1000;
+    }
+    .closeX{
+      cursor:pointer;
+      font-size:18px;
+      padding:4px 10px;
+      border-radius:10px;
+      background:rgba(255,255,255,.12);
+    }
+    .modalBody{ padding:12px; background:#0f2741; }
+    .cropWrap{
+      background:#0b1320;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      position:relative;
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      background:#000;
+    }
+    .modalBtns{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      padding:12px;
+      background:#0f2741;
+      flex-wrap:wrap;
+    }
+    .btn.orange{ background: linear-gradient(180deg, #ffbd3b, #f0a81a); color:#1b1200; }
+    .btn.white{ background: linear-gradient(180deg, #ffffff, #edf3ff); color:#0b2b55; border:1px solid rgba(255,255,255,.35); }
 
     /* ====== LOGIN SCREEN ====== */
     .gate{
@@ -311,6 +363,7 @@
       grid-template-columns: 1.2fr .8fr;
       min-height: 520px;
     }
+
     .brandPane{
       padding:28px 30px;
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 70%, #eef6ff 100%);
@@ -357,6 +410,8 @@
       color:#17355a;
       z-index:1;
     }
+    .brandNote{ margin-top:14px; color:#3b4a5f; font-size:14px; line-height:1.55; max-width:520px; z-index:1; }
+
     .formPane{
       padding:28px 26px;
       display:flex;
@@ -468,6 +523,7 @@
           </div>
         </div>
         <div class="brandSub">UTT tasvirida tugunlarni baholash yordamchisi</div>
+        <div class="brandNote"></div>
       </div>
 
       <div class="formPane">
@@ -560,12 +616,10 @@
           <div class="imgFrame" id="mainFrame">
             <div class="placeholder" id="mainPlaceholder">Rasm yuklanmagan</div>
             <img id="mainImg" style="display:none;" alt="UTT rasm" />
-            <!-- ✅ bbox overlay canvas -->
-            <canvas id="bboxCanvas" class="bboxOverlay"></canvas>
           </div>
           <div class="note">
-            Endi tizim bitta so‘rov bilan ishlaydi: <b>/analyze</b> (YOLO + crop + multi-crop).
-            Frontend crop qilmaydi — natija barqaror bo‘ladi.
+            “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / Qo‘lda belgilash / Belgilanmasin).
+            AI endi <b>/analyze</b> orqali ishlaydi (backend o‘zi crop qiladi).
           </div>
         </div>
       </div>
@@ -596,11 +650,36 @@
     <div class="footer">© Qalqonsimon AI — tadqiqot uchun demo modeli</div>
   </div>
 
+  <!-- ROI MODAL -->
+  <div class="modalBack" id="modalBack">
+    <div class="modal">
+      <div class="modalHead">
+        <div>ROI belgilash (crop)</div>
+        <div class="closeX" id="closeModal">✕</div>
+      </div>
+
+      <div class="modalBody">
+        <div class="cropWrap">
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="modalBtns">
+        <button class="btn orange" id="aiBtn">AI bilan belgilash</button>
+        <button class="btn white" id="noCropBtn">Belgilanmasin</button>
+        <button class="btn green" id="manualCropBtn">Qo‘lda belgilash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING LOGOUT -->
   <button class="logoutBtn floatingLogout" id="logoutBtn" type="button" style="display:none;">
     Chiqish
   </button>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
   // =========================
   // API BASE
   // =========================
@@ -635,7 +714,6 @@
   function hideConsent(){
     consentBack.style.display = "none";
   }
-
   function enterApp(){
     gate.style.display = "none";
     app.style.display = "block";
@@ -655,9 +733,9 @@
 
     if(logoutBtn) logoutBtn.style.display = "none";
 
-    if(loginUser) loginUser.value = "";
-    if(loginPass) loginPass.value = "";
-    if(loginErr) loginErr.textContent = "";
+    loginUser.value = "";
+    loginPass.value = "";
+    loginErr.textContent = "";
   }
 
   function boot(){
@@ -724,7 +802,7 @@
   }
 
   // =========================
-  // AUTO LOGOUT: 5 daqiqa inactivity
+  // AUTO LOGOUT: 5 min
   // =========================
   const AUTO_LOGOUT_MS = 5 * 60 * 1000;
   let idleTimer = null;
@@ -747,7 +825,7 @@
   });
 
   // =========================
-  // ROI / ANALYZE UI
+  // ROI + ANALYZE
   // =========================
   const fileEl = document.getElementById("file");
   const fileNameEl = document.getElementById("fileName");
@@ -821,7 +899,14 @@
     });
   }
 
-  // ✅ 1) Manual crop -> /classify
+  // ===== BACKEND CALLS =====
+  async function callAnalyzeFull(file){
+    const fd = new FormData();
+    fd.append("image", file);
+    const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
+    return await r.json();
+  }
+
   async function callClassifyRoi(roiBlob){
     const fd = new FormData();
     fd.append("image", roiBlob, "roi.jpg");
@@ -829,12 +914,31 @@
     return await r.json();
   }
 
-  // ✅ 2) AI pipeline -> /analyze (full image)
-  async function callAnalyzeFull(file){
-    const fd = new FormData();
-    fd.append("image", file);
-    const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
-    return await r.json();
+  function setResultUI(res){
+    if(!res || res.ok === false){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: natija olinmadi";
+      return;
+    }
+    const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
+    const pct = Math.round(p * 100);
+
+    riskBox.textContent = `${pct}%`;
+
+    const t = (res.triage || "").toLowerCase();
+    if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
+    else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
+    else if(t === "malignant") summaryBox.textContent = "YOMON SIFATLI";
+    else summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
+  }
+
+  function showBlobOnMain(blob){
+    const url = URL.createObjectURL(blob);
+    mainImg.onload = () => {
+      mainImg.style.display="block";
+      mainPlaceholder.style.display="none";
+    };
+    mainImg.src = url;
   }
 
   function cropFromRectScaledToOriginal(){
@@ -866,32 +970,6 @@
     return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
   }
 
-  function setResultUI(res){
-    if(!res || res.ok === false){
-      riskBox.textContent = "—";
-      summaryBox.textContent = "Xatolik: natija olinmadi";
-      return;
-    }
-    const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
-    const pct = Math.round(p * 100);
-    riskBox.textContent = `${pct}%`;
-
-    const t = (res.triage || "").toLowerCase();
-    if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
-    else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
-    else if(t === "malignant") summaryBox.textContent = "YOMON SIFATLI";
-    else summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
-  }
-
-  async function showRoiOnMain(roiBlob){
-    const url = URL.createObjectURL(roiBlob);
-    mainImg.onload = () => {
-      mainImg.style.display="block";
-      mainPlaceholder.style.display="none";
-    };
-    mainImg.src = url;
-  }
-
   // ===== FILE LOAD =====
   fileEl.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
@@ -900,20 +978,25 @@
     originalFile = f;
     fileNameEl.textContent = f.name;
 
-    originalImage = await fileToImage(f);
-    imgLoaded = true;
+    try{
+      originalImage = await fileToImage(f);
+      imgLoaded = true;
 
-    mainImg.src = originalImage.src;
-    mainImg.style.display = "block";
-    mainPlaceholder.style.display = "none";
+      mainImg.src = originalImage.src;
+      mainImg.style.display = "block";
+      mainPlaceholder.style.display = "none";
 
-    riskBox.textContent = "—";
-    summaryBox.textContent = "Rasm yuklang va tahlil qiling";
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Rasm yuklang va tahlil qiling";
+    } catch(err){
+      alert("Rasm yuklashda xatolik bo‘ldi.");
+      console.error(err);
+    }
 
     resetIdleTimer();
   });
 
-  // ===== OPEN ROI MODAL =====
+  // ===== OPEN MODAL =====
   analyzeBtn.addEventListener("click", ()=>{
     if(!originalFile){
       alert("Avval rasm yuklang.");
@@ -946,9 +1029,7 @@
     if(e.target === modalBack) hideModal();
   });
 
-  // =========================
-  // MANUAL CROP (drag)
-  // =========================
+  // ===== MANUAL DRAW =====
   canvas.addEventListener("mousedown", (e)=>{
     if(!selecting) return;
     const r = canvas.getBoundingClientRect();
@@ -981,20 +1062,16 @@
     const roiBlob = await cropFromRectScaledToOriginal();
     hideModal();
 
-    // ✅ manual ROI -> /classify
     summaryBox.textContent = "Tahlil qilinmoqda...";
     const res = await callClassifyRoi(roiBlob);
     setResultUI(res);
 
-    // ROI ko‘rsatib qo‘yamiz (sizga yoqadigan format)
-    await showRoiOnMain(roiBlob);
+    showBlobOnMain(roiBlob);
   });
 
-  // =========================
-  // BUTTONS
-  // =========================
+  // ===== BUTTONS =====
 
-  // ✅ AI bilan belgilash -> /analyze (backend o'zi crop qiladi)
+  // ✅ AI bilan belgilash: /analyze (backend crop + multi-crop)
   aiBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1016,49 +1093,63 @@
         return;
       }
 
-      // ✅ natijani UI ga chiqaramiz (p_mean, triage)
       setResultUI(res);
 
-      // ✅ bbox asosida ROI ni faqat KO‘RISH UCHUN crop qilib ko'rsatamiz
-      // (natija backenddan olingan)
-      const roiBlob = await cropFromBBoxOriginal(res.bbox);
-      hideModal();
-      await showRoiOnMain(roiBlob);
+      // UI: avvalgidek ROI crop ko‘rsatamiz (faqat ko‘rsatish uchun)
+      if(res.bbox){
+        const roiBlob = await cropFromBBoxOriginal(res.bbox);
+        hideModal();
+        showBlobOnMain(roiBlob);
+      } else {
+        hideModal();
+      }
 
+    } catch(err){
+      alert("Xatolik: backend ulanmagan yoki javob bermadi.");
+      console.error(err);
     } finally {
       aiBtn.disabled = false;
       aiBtn.textContent = old;
     }
   });
 
-  // ✅ Belgilanmasin -> ham /analyze (AI o'zi topadi)
+  // ✅ Belgilanmasin: /analyze (AI o‘zi topadi, lekin original rasm qoladi)
   noCropBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
+
     hideModal();
-
     summaryBox.textContent = "AI tahlil qilmoqda...";
-    const res = await callAnalyzeFull(originalFile);
-    console.log("ANALYZE JSON:", res);
 
-    if(!res || res.ok === false){
-      riskBox.textContent = "—";
-      summaryBox.textContent = "Xatolik: natija olinmadi";
-      return;
-    }
-    if(!res.found){
-      riskBox.textContent = "—";
-      summaryBox.textContent = "AI tugun topolmadi";
-      return;
-    }
-    setResultUI(res);
+    try{
+      const res = await callAnalyzeFull(originalFile);
+      console.log("ANALYZE JSON:", res);
 
-    // original rasmni qayta ko‘rsatamiz
-    mainImg.src = originalImage.src;
-    mainImg.style.display="block";
-    mainPlaceholder.style.display="none";
+      if(!res || res.ok === false){
+        riskBox.textContent = "—";
+        summaryBox.textContent = "Xatolik: natija olinmadi";
+        return;
+      }
+      if(!res.found){
+        riskBox.textContent = "—";
+        summaryBox.textContent = "AI tugun topolmadi";
+        return;
+      }
+
+      setResultUI(res);
+
+      // original rasmni saqlaymiz
+      mainImg.src = originalImage.src;
+      mainImg.style.display = "block";
+      mainPlaceholder.style.display = "none";
+
+    } catch(err){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: backend ulanmagan";
+      console.error(err);
+    }
   });
 
-  // ✅ Qo'lda belgilash (manual drag) ON
+  // ✅ Qo‘lda belgilash: drag mode ON
   manualCropBtn.addEventListener("click", ()=>{
     selecting = true;
     rect = null;
@@ -1072,7 +1163,9 @@
   });
 
   boot();
+
+});
 </script>
+
 </body>
 </html>
-
