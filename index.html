@@ -24,13 +24,7 @@
       background: radial-gradient(1200px 700px at 30% 0%, #f7fbff 0%, var(--bg) 55%, #eaf2ff 100%);
       color:#0b1320;
     }
-
-    /* ====== APP LAYOUT ====== */
-    .wrap{
-      max-width: 1680px;
-      margin: 18px auto 26px;
-      padding: 0 16px;
-    }
+    .wrap{ max-width: 1680px; margin: 18px auto 26px; padding: 0 16px; }
 
     .header{
       background:var(--panel);
@@ -56,13 +50,7 @@
       align-items:center;
       gap:14px;
     }
-
-    .logoBox{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width:0;
-    }
+    .logoBox{ display:flex; align-items:center; gap:14px; min-width:0; }
     .logoBox.right{ justify-content:flex-end; }
     .logo{
       width:68px; height:68px;
@@ -84,23 +72,9 @@
     }
 
     .titleBlock{ text-align:center; }
-    .title{
-      margin:0;
-      font-size:46px;
-      letter-spacing:7px;
-      font-weight:1000;
-    }
-    .subtitle{
-      margin:4px 0 0;
-      font-size:18px;
-      font-weight:800;
-      color:#17355a;
-    }
-    .desc{
-      margin:10px 0 0;
-      font-size:14px;
-      color:#3b4a5f;
-    }
+    .title{ margin:0; font-size:46px; letter-spacing:7px; font-weight:1000; }
+    .subtitle{ margin:4px 0 0; font-size:18px; font-weight:800; color:#17355a; }
+    .desc{ margin:10px 0 0; font-size:14px; color:#3b4a5f; }
 
     .controls{
       margin-top:14px;
@@ -123,6 +97,8 @@
     .btn.blue{ background: linear-gradient(180deg, #0f6fd0, var(--blue)); color:#fff; }
     .btn.green{ background: linear-gradient(180deg, #19b35a, var(--green)); color:#fff; }
     .btn.gray{ background: linear-gradient(180deg, #3a4657, var(--gray)); color:#fff; }
+    .btn.orange{ background: linear-gradient(180deg, #ffbd3b, #f0a81a); color:#1b1200; }
+    .btn.white{ background: linear-gradient(180deg, #ffffff, #edf3ff); color:#0b2b55; border:1px solid rgba(255,255,255,.35); }
     .btn:disabled{ opacity:.65; cursor:not-allowed; box-shadow:none; }
 
     .fileRow{ display:flex; gap:10px; align-items:center; }
@@ -156,7 +132,6 @@
       gap:14px;
       margin-top:12px;
     }
-
     .card{
       background:var(--panel);
       border:1px solid var(--border);
@@ -190,20 +165,10 @@
       object-fit:contain;
       display:block;
     }
-    .placeholder{
-      color:#6a7a8f;
-      text-align:center;
-      font-weight:800;
-    }
-    .note{
-      margin-top:10px;
-      color:#415166;
-      font-size:13px;
-      line-height:1.45;
-    }
+    .placeholder{ color:#6a7a8f; text-align:center; font-weight:800; }
+    .note{ margin-top:10px; color:#415166; font-size:13px; line-height:1.45; }
 
     .center{ text-align:center; }
-
     .pill{
       display:inline-block;
       padding:10px 18px;
@@ -233,10 +198,7 @@
       font-weight:1000;
       text-align:center;
     }
-    .bigBox.small{
-      font-size:20px;
-      min-height:76px;
-    }
+    .bigBox.small{ font-size:20px; min-height:76px; }
 
     .disclaimerBox{
       margin-top:14px;
@@ -251,14 +213,8 @@
     }
     .disclaimerBox b{ color:#3a2500; }
 
-    .footer{
-      text-align:center;
-      color:#6b7785;
-      font-size:12px;
-      margin-top:10px;
-    }
+    .footer{ text-align:center; color:#6b7785; font-size:12px; margin-top:10px; }
 
-    /* ====== LOGOUT BUTTON (BASE) ====== */
     .logoutBtn{
       padding:12px 18px;
       border-radius:999px;
@@ -272,8 +228,6 @@
     }
     .logoutBtn:hover{ filter:brightness(.98); }
     .logoutBtn:active{ transform:scale(.97); }
-
-    /* ====== FLOATING LOGOUT (BOTTOM RIGHT) ====== */
     .floatingLogout{
       position:fixed;
       right:22px;
@@ -283,7 +237,7 @@
       box-shadow: 0 14px 32px rgba(10,30,60,.18);
     }
 
-    /* ====== ROI MODAL ====== */
+    /* ROI MODAL */
     .modalBack{
       position:fixed; inset:0;
       background:rgba(0,0,0,.55);
@@ -330,7 +284,35 @@
       height:auto;
       display:block;
       background:#000;
+      cursor:crosshair;
     }
+
+    .modalFooter{
+      padding:12px;
+      background:#0f2741;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      align-items:center;
+    }
+    .miniPanel{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:10px;
+      color:#fff;
+      font-weight:900;
+    }
+    .miniPanel label{ display:block; font-size:12px; opacity:.9; margin-bottom:6px; }
+    .miniPanel select, .miniPanel input[type="range"]{
+      width:100%;
+    }
+    .rangeVal{
+      margin-top:6px;
+      font-size:12px;
+      opacity:.9;
+    }
+
     .modalBtns{
       display:flex;
       gap:10px;
@@ -339,10 +321,8 @@
       background:#0f2741;
       flex-wrap:wrap;
     }
-    .btn.orange{ background: linear-gradient(180deg, #ffbd3b, #f0a81a); color:#1b1200; }
-    .btn.white{ background: linear-gradient(180deg, #ffffff, #edf3ff); color:#0b2b55; border:1px solid rgba(255,255,255,.35); }
 
-    /* ====== LOGIN SCREEN ====== */
+    /* LOGIN */
     .gate{
       position:fixed; inset:0;
       background: radial-gradient(1100px 700px at 25% 0%, #f7fbff 0%, #eef4fb 55%, #eaf2ff 100%);
@@ -363,7 +343,6 @@
       grid-template-columns: 1.2fr .8fr;
       min-height: 520px;
     }
-
     .brandPane{
       padding:28px 30px;
       background: linear-gradient(135deg, #ffffff 0%, #f3f8ff 70%, #eef6ff 100%);
@@ -382,11 +361,7 @@
       transform: rotate(-10deg);
       pointer-events:none;
     }
-    .brandRow{
-      display:flex; align-items:center; gap:16px;
-      justify-content:center;
-      z-index:1;
-    }
+    .brandRow{ display:flex; align-items:center; gap:16px; justify-content:center; z-index:1; }
     .brandLogo{
       width:92px; height:92px;
       border-radius:20px;
@@ -403,13 +378,7 @@
       font-weight:1000;
       line-height:1.05;
     }
-    .brandSub{
-      margin-top:10px;
-      font-size:16px;
-      font-weight:800;
-      color:#17355a;
-      z-index:1;
-    }
+    .brandSub{ margin-top:10px; font-size:16px; font-weight:800; color:#17355a; z-index:1; }
     .brandNote{ margin-top:14px; color:#3b4a5f; font-size:14px; line-height:1.55; max-width:520px; z-index:1; }
 
     .formPane{
@@ -420,13 +389,7 @@
       gap:12px;
       background:#fff;
     }
-    .loginTitle{
-      margin:0 0 6px;
-      font-size:18px;
-      font-weight:1000;
-      color:#13233b;
-      letter-spacing:.5px;
-    }
+    .loginTitle{ margin:0 0 6px; font-size:18px; font-weight:1000; color:#13233b; letter-spacing:.5px; }
     .loginBtn{
       width:100%;
       padding:12px 14px;
@@ -438,14 +401,9 @@
       cursor:pointer;
       box-shadow: 0 10px 20px rgba(11,97,179,.18);
     }
-    .loginErr{
-      color:#b00020;
-      font-weight:800;
-      font-size:13px;
-      min-height: 18px;
-    }
+    .loginErr{ color:#b00020; font-weight:800; font-size:13px; min-height: 18px; }
 
-    /* ====== CONSENT MODAL ====== */
+    /* CONSENT */
     .consentBack{
       position:fixed; inset:0;
       background:rgba(0,0,0,.55);
@@ -473,12 +431,7 @@
       align-items:center;
       gap:10px;
     }
-    .consentBody{
-      padding:18px 16px;
-      color:#13233b;
-      line-height:1.7;
-      font-size:15px;
-    }
+    .consentBody{ padding:18px 16px; color:#13233b; line-height:1.7; font-size:15px; }
     .consentFooter{
       display:flex;
       align-items:center;
@@ -489,13 +442,7 @@
       background:#fbfdff;
       flex-wrap:wrap;
     }
-    .checkRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      color:#17355a;
-    }
+    .checkRow{ display:flex; align-items:center; gap:10px; font-weight:900; color:#17355a; }
 
     @media (max-width: 1050px){
       .hdr-top{ grid-template-columns: 1fr; text-align:center; }
@@ -506,21 +453,20 @@
       .loginShell{ grid-template-columns: 1fr; }
       .brandRow{ flex-direction:column; }
       .brandTitle{ letter-spacing:4px; }
+      .modalFooter{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ===== LOGIN GATE ===== -->
+  <!-- LOGIN GATE -->
   <div class="gate" id="gate">
     <div class="loginShell">
       <div class="brandPane">
         <div class="brandRow">
           <img class="brandLogo" src="logo_left.png" alt="Logo">
-          <div>
-            <h1 class="brandTitle">QALQONSIMON AI</h1>
-          </div>
+          <div><h1 class="brandTitle">QALQONSIMON AI</h1></div>
         </div>
         <div class="brandSub">UTT tasvirida tugunlarni AI bilan baholash yordamchisi</div>
         <div class="brandNote"></div>
@@ -532,14 +478,12 @@
         <input class="inp" id="loginPass" placeholder="Parol" type="password" autocomplete="current-password">
         <div class="loginErr" id="loginErr"></div>
         <button class="loginBtn" id="loginBtn">Kirish</button>
-        <div style="font-size:12px;color:#5a6b82;line-height:1.5;">
-          * Bu demo versiya.
-        </div>
+        <div style="font-size:12px;color:#5a6b82;line-height:1.5;">* Bu demo versiya.</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== CONSENT MODAL ===== -->
+  <!-- CONSENT MODAL -->
   <div class="consentBack" id="consentBack">
     <div class="consent">
       <div class="consentHead">
@@ -569,29 +513,23 @@
     </div>
   </div>
 
-  <!-- ===== MAIN APP ===== -->
+  <!-- MAIN APP -->
   <div class="wrap" id="app" style="display:none;">
     <div class="header">
       <div class="hdr-top">
         <div class="logoBox">
           <img class="logo" id="logoLeft" src="logo_left.png" alt="Logo left" />
-          <div>
-            <div class="logoText">Tibbiy radiologiya kafedrasi №2</div>
-          </div>
+          <div><div class="logoText">Tibbiy radiologiya kafedrasi №2</div></div>
         </div>
 
         <div class="titleBlock">
           <h1 class="title">QALQONSIMON AI</h1>
           <div class="subtitle">UTT tasvirida tugunlarni AI yordamida baholash yordamchisi</div>
-          <div class="desc">
-            Qalqonsimon bez UTT tasvirini yuklang va <b>“Tahlil qilish”</b> tugmasini bosing.
-          </div>
+          <div class="desc">Qalqonsimon bez UTT tasvirini yuklang va <b>“Tahlil qilish”</b> tugmasini bosing.</div>
         </div>
 
         <div class="logoBox right">
-          <div style="text-align:right;">
-            <div class="logoText">Toshkent Davlat Tibbiyot Universiteti</div>
-          </div>
+          <div style="text-align:right;"><div class="logoText">Toshkent Davlat Tibbiyot Universiteti</div></div>
           <img class="logo" id="logoRight" src="logo_right.png" alt="Logo right" />
         </div>
       </div>
@@ -618,8 +556,8 @@
             <img id="mainImg" style="display:none;" alt="UTT rasm" />
           </div>
           <div class="note">
-            “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / Qo‘lda belgilash / Belgilanmasin).
-            AI endi <b>/analyze</b> orqali ishlaydi.
+            “Tahlil qilish” → ROI tanlanadi:
+            <b>AI</b> / <b>Qo‘lda STABIL (markaz + slider)</b> / <b>Qo‘lda ERKIN (drag)</b> / <b>Belgilanmasin</b>.
           </div>
         </div>
       </div>
@@ -628,14 +566,10 @@
         <div class="cardHead">Natija</div>
         <div class="cardBody">
 
-          <div class="center">
-            <div class="pill">TUGUNNING YOMON SIFATLILIK EHTIMOLI</div>
-          </div>
+          <div class="center"><div class="pill">TUGUNNING YOMON SIFATLILIK EHTIMOLI</div></div>
           <div class="bigBox" id="riskBox">—</div>
 
-          <div class="center" style="margin-top:14px;">
-            <div class="pill green">MODEL XULOSASI</div>
-          </div>
+          <div class="center" style="margin-top:14px;"><div class="pill green">MODEL XULOSASI</div></div>
           <div class="bigBox small" id="summaryBox">Rasm yuklang va tahlil qiling</div>
 
           <div class="disclaimerBox">
@@ -664,18 +598,34 @@
         </div>
       </div>
 
+      <!-- AI multi-nodule + slider -->
+      <div class="modalFooter">
+        <div class="miniPanel">
+          <label>AI topgan tugunlar (ixtiyoriy)</label>
+          <select id="noduleSelect">
+            <option value="">— (AI ro‘yxatini yuklash) —</option>
+          </select>
+          <div class="rangeVal" id="noduleHint">AI bilan belgilashni bossangiz ro‘yxat keladi.</div>
+        </div>
+
+        <div class="miniPanel">
+          <label>STABIL ROI kattaligi (frame size)</label>
+          <input id="roiSize" type="range" min="18" max="55" value="28" />
+          <div class="rangeVal" id="roiSizeVal">Frame: 0.28</div>
+        </div>
+      </div>
+
       <div class="modalBtns">
         <button class="btn orange" id="aiBtn">AI bilan belgilash</button>
         <button class="btn white" id="noCropBtn">Belgilanmasin</button>
-        <button class="btn green" id="manualCropBtn">Qo‘lda belgilash</button>
+        <button class="btn blue" id="manualCenterBtn">Qo‘lda STABIL (markaz)</button>
+        <button class="btn green" id="manualDragBtn">Qo‘lda ERKIN (drag)</button>
       </div>
     </div>
   </div>
 
   <!-- FLOATING LOGOUT -->
-  <button class="logoutBtn floatingLogout" id="logoutBtn" type="button" style="display:none;">
-    Chiqish
-  </button>
+  <button class="logoutBtn floatingLogout" id="logoutBtn" type="button" style="display:none;">Chiqish</button>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -689,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEMO_USER = "doctor";
   const DEMO_PASS = "12345";
 
-  // Elements: Gate + Consent
+  // Gate + Consent
   const gate = document.getElementById("gate");
   const app = document.getElementById("app");
   const loginUser = document.getElementById("loginUser");
@@ -702,7 +652,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const agreeBtn    = document.getElementById("agreeBtn");
   const closeConsent = document.getElementById("closeConsent");
 
-  // floating logout
   const logoutBtn = document.getElementById("logoutBtn");
 
   function showConsent(){
@@ -711,9 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
     agreeBtn.disabled = true;
     if(logoutBtn) logoutBtn.style.display = "none";
   }
-  function hideConsent(){
-    consentBack.style.display = "none";
-  }
+  function hideConsent(){ consentBack.style.display = "none"; }
   function enterApp(){
     gate.style.display = "none";
     app.style.display = "block";
@@ -730,7 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
     hideConsent();
     gate.style.display = "flex";
     app.style.display = "none";
-
     if(logoutBtn) logoutBtn.style.display = "none";
 
     loginUser.value = "";
@@ -791,14 +737,10 @@ document.addEventListener("DOMContentLoaded", () => {
     resetIdleTimer();
   });
 
-  closeConsent.addEventListener("click", ()=>{
-    doLogout();
-  });
+  closeConsent.addEventListener("click", ()=>{ doLogout(); });
 
   if(logoutBtn){
-    logoutBtn.addEventListener("click", ()=>{
-      doLogout();
-    });
+    logoutBtn.addEventListener("click", ()=>{ doLogout(); });
   }
 
   // =========================
@@ -843,7 +785,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const aiBtn = document.getElementById("aiBtn");
   const noCropBtn = document.getElementById("noCropBtn");
-  const manualCropBtn = document.getElementById("manualCropBtn");
+  const manualCenterBtn = document.getElementById("manualCenterBtn");
+  const manualDragBtn = document.getElementById("manualDragBtn");
+
+  const roiSize = document.getElementById("roiSize");
+  const roiSizeVal = document.getElementById("roiSizeVal");
+
+  const noduleSelect = document.getElementById("noduleSelect");
+  const noduleHint = document.getElementById("noduleHint");
 
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
@@ -852,12 +801,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let originalImage = new Image();
   let imgLoaded = false;
 
+  // modes
+  let mode = "none"; // "center" | "drag" | "none"
   let selecting = false;
   let rect = null;
   let start = null;
 
-  // ===== CANVAS SCALE (STABIL) =====
+  // canvas scale
   let canvasScale = 1;  // displayed_px / original_px
+
+  // AI nodules cache
+  let aiItems = []; // [{bbox:[x1,y1,x2,y2], conf:...}]
 
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
@@ -865,17 +819,14 @@ document.addEventListener("DOMContentLoaded", () => {
     selecting = false;
     start = null;
     rect = null;
-    // chizishni modal yopilganda shart emas, lekin zarar qilmaydi
-    if(imgLoaded){
-      drawCanvas();
-    }
+    mode = "none";
+    if(imgLoaded) drawCanvas();
   }
 
   function setupCanvasSize(){
     if(!imgLoaded) return;
     const maxW = canvas.parentElement.clientWidth;
     canvasScale = maxW / originalImage.width;
-
     canvas.width = Math.floor(originalImage.width * canvasScale);
     canvas.height = Math.floor(originalImage.height * canvasScale);
   }
@@ -886,6 +837,25 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
 
+    // draw AI selected bbox
+    if(noduleSelect.value){
+      const idx = Number(noduleSelect.value);
+      const item = aiItems[idx];
+      if(item){
+        const [x1,y1,x2,y2] = item.bbox;
+        const sx1 = x1 * canvasScale;
+        const sy1 = y1 * canvasScale;
+        const sw = (x2-x1) * canvasScale;
+        const sh = (y2-y1) * canvasScale;
+        ctx.save();
+        ctx.strokeStyle = "#ffbd3b";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(sx1, sy1, sw, sh);
+        ctx.restore();
+      }
+    }
+
+    // draw drag rect
     if(rect){
       ctx.save();
       ctx.strokeStyle = "#1da1ff";
@@ -910,27 +880,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== BACKEND CALLS =====
-  async function callAnalyzeFull(file){
+  async function callAnalyze(file){
     const fd = new FormData();
     fd.append("image", file);
     const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
     return await r.json();
   }
 
-  // ✅ NEW: manual ROI -> backend crop
+  async function callDetectMulti(file){
+    const fd = new FormData();
+    fd.append("image", file);
+    fd.append("topk", "8");
+    const r = await fetch(`${API_BASE}/detect_multi`, { method:"POST", body:fd });
+    return await r.json();
+  }
+
+  async function callClassifyCenter(file, cx, cy, frameFrac){
+    const fd = new FormData();
+    fd.append("image", file);
+    fd.append("cx", String(cx));
+    fd.append("cy", String(cy));
+    fd.append("frame_frac", String(frameFrac));
+    fd.append("use_jitter", "true");
+    const r = await fetch(`${API_BASE}/classify_center`, { method:"POST", body:fd });
+    return await r.json();
+  }
+
   async function callClassifyRoiBBox(file, bbox){
     const fd = new FormData();
     fd.append("image", file);
-
     fd.append("x1", String(bbox.x1));
     fd.append("y1", String(bbox.y1));
     fd.append("x2", String(bbox.x2));
     fd.append("y2", String(bbox.y2));
-
-    // stabil:
     fd.append("use_jitter", "true");
-    fd.append("pad_frac", "0.08");
-
     const r = await fetch(`${API_BASE}/classify_roi`, { method:"POST", body:fd });
     return await r.json();
   }
@@ -941,17 +924,12 @@ document.addEventListener("DOMContentLoaded", () => {
       summaryBox.textContent = "Xatolik: natija olinmadi";
       return;
     }
+
     const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
-    const pct = Math.round(p * 100);
+    riskBox.textContent = `${Math.round(p * 100)}%`;
 
-    riskBox.textContent = `${pct}%`;
-
-    // Sizning backend triage matn qaytaradi, shuning uchun fallback ishlaydi
-    const t = (res.triage || "").toLowerCase();
-    if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
-    else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
-    else if(t === "malignant") summaryBox.textContent = "YOMON SIFATLI";
-    else summaryBox.textContent = (res.triage ? res.triage : "Natija tayyor");
+    // triage text (backend sizda matn qaytaradi)
+    summaryBox.textContent = res.triage ? res.triage : "Natija tayyor";
   }
 
   function showBlobOnMain(blob){
@@ -963,20 +941,15 @@ document.addEventListener("DOMContentLoaded", () => {
     mainImg.src = url;
   }
 
-  // ROI preview uchun (faqat ko‘rsatish)
-  function cropFromRectScaledToOriginal(){
-    const s = 1 / canvasScale; // original_px / displayed_px
-    const x = Math.round(rect.x * s);
-    const y = Math.round(rect.y * s);
-    const w = Math.round(rect.w * s);
-    const h = Math.round(rect.h * s);
+  function cropFromBBoxOriginal(bbox){
+    const [x1,y1,x2,y2] = bbox;
+    const w = Math.max(1, x2 - x1);
+    const h = Math.max(1, y2 - y1);
 
     const tmp = document.createElement("canvas");
-    tmp.width = Math.max(1,w);
-    tmp.height = Math.max(1,h);
+    tmp.width = w; tmp.height = h;
     const tctx = tmp.getContext("2d");
-    tctx.drawImage(originalImage, x, y, w, h, 0, 0, w, h);
-
+    tctx.drawImage(originalImage, x1, y1, w, h, 0, 0, w, h);
     return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
   }
 
@@ -989,18 +962,35 @@ document.addEventListener("DOMContentLoaded", () => {
     return { x1, y1, x2, y2 };
   }
 
-  function cropFromBBoxOriginal(bbox){
-    const [x1,y1,x2,y2] = bbox;
-    const w = Math.max(1, x2 - x1);
-    const h = Math.max(1, y2 - y1);
-
-    const tmp = document.createElement("canvas");
-    tmp.width = w; tmp.height = h;
-    const tctx = tmp.getContext("2d");
-    tctx.drawImage(originalImage, x1, y1, w, h, 0, 0, w, h);
-
-    return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
+  function canvasPointToOriginal(e){
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const s = 1 / canvasScale;
+    return { ox: x * s, oy: y * s };
   }
+
+  function updateRoiSizeLabel(){
+    const v = Number(roiSize.value) / 100;
+    roiSizeVal.textContent = `Frame: ${v.toFixed(2)}`;
+  }
+  roiSize.addEventListener("input", ()=>{
+    updateRoiSizeLabel();
+    resetIdleTimer();
+  });
+  updateRoiSizeLabel();
+
+  function resetNoduleSelectUI(){
+    noduleSelect.innerHTML = `<option value="">— (AI ro‘yxatini yuklash) —</option>`;
+    noduleHint.textContent = "AI bilan belgilashni bossangiz ro‘yxat keladi.";
+    aiItems = [];
+  }
+
+  noduleSelect.addEventListener("change", async ()=>{
+    if(!noduleSelect.value) { drawCanvas(); return; }
+    drawCanvas();
+    resetIdleTimer();
+  });
 
   // ===== FILE LOAD =====
   fileEl.addEventListener("change", async (e)=>{
@@ -1009,6 +999,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     originalFile = f;
     fileNameEl.textContent = f.name;
+    resetNoduleSelectUI();
 
     try{
       originalImage = await fileToImage(f);
@@ -1055,6 +1046,7 @@ document.addEventListener("DOMContentLoaded", () => {
     riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
 
+    resetNoduleSelectUI();
     hideModal();
     resetIdleTimer();
   });
@@ -1064,9 +1056,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if(e.target === modalBack) hideModal();
   });
 
-  // ===== MANUAL DRAW =====
+  // ===== CANVAS EVENTS =====
   canvas.addEventListener("mousedown", (e)=>{
-    if(!selecting) return;
+    if(mode !== "drag") return;
+    selecting = true;
     const r = canvas.getBoundingClientRect();
     start = { x: e.clientX - r.left, y: e.clientY - r.top };
     rect = { x:start.x, y:start.y, w:1, h:1 };
@@ -1074,7 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   canvas.addEventListener("mousemove", (e)=>{
-    if(!selecting || !start) return;
+    if(mode !== "drag" || !selecting || !start) return;
     const r = canvas.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
@@ -1085,36 +1078,62 @@ document.addEventListener("DOMContentLoaded", () => {
     if(rect.w < 0){ rect.x = x; rect.w = Math.abs(rect.w); } else rect.x = start.x;
     if(rect.h < 0){ rect.y = y; rect.h = Math.abs(rect.h); } else rect.y = start.y;
 
-    // IMPORTANT: bu yerda canvas.width/height o‘zgarmaydi!
     drawCanvas();
   });
 
   canvas.addEventListener("mouseup", async ()=>{
-    if(!selecting || !rect) return;
+    if(mode !== "drag" || !selecting || !rect) return;
 
     selecting = false;
     start = null;
     drawCanvas();
 
-    // 1) bbox original pixelda (backend uchun)
     const bbox = rectToBBoxOriginal();
-
-    // 2) ROI preview (faqat ko‘rsatish uchun)
-    const roiBlob = await cropFromRectScaledToOriginal();
-
     hideModal();
 
     summaryBox.textContent = "Tahlil qilinmoqda...";
     const res = await callClassifyRoiBBox(originalFile, bbox);
-    console.log("MANUAL ROI JSON:", res);
-
+    console.log("MANUAL DRAG JSON:", res);
     setResultUI(res);
+
+    // preview uchun
+    const roiBlob = await cropFromBBoxOriginal([bbox.x1, bbox.y1, bbox.x2, bbox.y2]);
     showBlobOnMain(roiBlob);
+  });
+
+  canvas.addEventListener("click", async (e)=>{
+    if(mode !== "center") return;
+    if(!originalFile) return;
+
+    const { ox, oy } = canvasPointToOriginal(e);
+    const frameFrac = Number(roiSize.value) / 100;
+
+    hideModal();
+    summaryBox.textContent = "Tahlil qilinmoqda...";
+
+    const res = await callClassifyCenter(originalFile, ox, oy, frameFrac);
+    console.log("MANUAL CENTER JSON:", res);
+    setResultUI(res);
+
+    // preview uchun: biz bbox_float qaytarganmiz
+    if(res && res.ok && res.bbox_float){
+      const [x1,y1,x2,y2] = res.bbox_float;
+      const roiBlob = await cropFromBBoxOriginal([
+        Math.max(0, Math.round(x1)),
+        Math.max(0, Math.round(y1)),
+        Math.min(originalImage.width, Math.round(x2)),
+        Math.min(originalImage.height, Math.round(y2))
+      ]);
+      showBlobOnMain(roiBlob);
+    }
   });
 
   // ===== BUTTONS =====
 
-  // ✅ AI bilan belgilash: /analyze (backend crop + multi-crop)
+  // AI bilan belgilash:
+  // 1) AI ro‘yxatini olib kelamiz (detect_multi)
+  // 2) dropdown to‘ldiramiz
+  // 3) default: 1-tugun markazidan classify_center qilamiz (frame slider bilan)
   aiBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1123,29 +1142,59 @@ document.addEventListener("DOMContentLoaded", () => {
     aiBtn.textContent = "Kutib turing...";
 
     try{
+      summaryBox.textContent = "AI tugunlarni qidirmoqda...";
+
+      const det = await callDetectMulti(originalFile);
+      console.log("DETECT_MULTI JSON:", det);
+
+      if(!det || det.ok === false || !det.found || !det.items || det.items.length === 0){
+        // fallback: eski analyze ishlasin
+        const res = await callAnalyze(originalFile);
+        console.log("ANALYZE JSON:", res);
+        if(res && res.ok && res.found){
+          setResultUI(res);
+          if(res.bbox){
+            const roiBlob = await cropFromBBoxOriginal(res.bbox);
+            showBlobOnMain(roiBlob);
+          }
+        } else {
+          alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
+        }
+        hideModal();
+        return;
+      }
+
+      aiItems = det.items;
+      noduleSelect.innerHTML = "";
+      aiItems.forEach((it, idx)=>{
+        const conf = Math.round((it.conf || 0) * 100);
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `Tugun ${idx+1} (conf ${conf}%)`;
+        noduleSelect.appendChild(opt);
+      });
+      noduleSelect.value = "0";
+      noduleHint.textContent = "Dropdown’dan tugunni tanlab, keyin Qo‘lda STABIL (markaz) ham ishlatishingiz mumkin.";
+
+      drawCanvas();
+
+      // default: 1-tugunni stable qilib baholaymiz
+      const item = aiItems[0];
+      const [x1,y1,x2,y2] = item.bbox;
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2;
+      const frameFrac = Number(roiSize.value) / 100;
+
+      hideModal();
       summaryBox.textContent = "AI tahlil qilmoqda...";
-      const res = await callAnalyzeFull(originalFile);
-      console.log("ANALYZE JSON:", res);
 
-      if(!res || res.ok === false){
-        alert("Xatolik: backend javobi noto‘g‘ri.");
-        return;
-      }
-      if(!res.found){
-        alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
-        return;
-      }
-
+      const res = await callClassifyCenter(originalFile, cx, cy, frameFrac);
+      console.log("AI CENTER JSON:", res);
       setResultUI(res);
 
-      // UI: ROI crop ko‘rsatish (faqat ko‘rsatish uchun)
-      if(res.bbox){
-        const roiBlob = await cropFromBBoxOriginal(res.bbox);
-        hideModal();
-        showBlobOnMain(roiBlob);
-      } else {
-        hideModal();
-      }
+      // preview
+      const roiBlob = await cropFromBBoxOriginal([Math.round(x1), Math.round(y1), Math.round(x2), Math.round(y2)]);
+      showBlobOnMain(roiBlob);
 
     } catch(err){
       alert("Xatolik: backend ulanmagan yoki javob bermadi.");
@@ -1156,7 +1205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ✅ Belgilanmasin: /analyze (AI o‘zi topadi, lekin original rasm qoladi)
+  // Belgilanmasin: /analyze (original rasm qoladi)
   noCropBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1164,7 +1213,7 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryBox.textContent = "AI tahlil qilmoqda...";
 
     try{
-      const res = await callAnalyzeFull(originalFile);
+      const res = await callAnalyze(originalFile);
       console.log("ANALYZE JSON:", res);
 
       if(!res || res.ok === false){
@@ -1180,7 +1229,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setResultUI(res);
 
-      // original rasmni saqlaymiz
       mainImg.src = originalImage.src;
       mainImg.style.display = "block";
       mainPlaceholder.style.display = "none";
@@ -1192,17 +1240,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ✅ Qo‘lda belgilash: drag mode ON
-  manualCropBtn.addEventListener("click", ()=>{
-    selecting = true;
+  // Manual STABIL (markaz)
+  manualCenterBtn.addEventListener("click", ()=>{
+    mode = "center";
+    selecting = false;
     rect = null;
     start = null;
 
-    // modal ochiq bo‘lsa canvas size tayyor bo‘lishi kerak
     setupCanvasSize();
     drawCanvas();
+    alert("STABIL rejim: Tugun markaziga 1 marta bosasiz. (Slider bilan ROI kattaligini moslang)");
+  });
 
-    alert("ROI ni sichqonchaning chap tugmasini bosib turgan holda belgilang.");
+  // Manual ERKIN (drag)
+  manualDragBtn.addEventListener("click", ()=>{
+    mode = "drag";
+    selecting = false;
+    rect = null;
+    start = null;
+
+    setupCanvasSize();
+    drawCanvas();
+    alert("ERKIN rejim: ROI ni sichqoncha bilan bosib-tortib belgilang. (Bu rejimda natija sezgir bo‘lishi mumkin)");
   });
 
   window.addEventListener("resize", ()=>{
@@ -1211,6 +1270,13 @@ document.addEventListener("DOMContentLoaded", () => {
       drawCanvas();
     }
   });
+
+  // =========================
+  // Logout + boot
+  // =========================
+  if(logoutBtn){
+    logoutBtn.addEventListener("click", ()=>{ doLogout(); });
+  }
 
   boot();
 
