@@ -298,27 +298,6 @@
       background:#000;
       cursor:crosshair;
     }
-
-    .modalFooter{
-      padding:12px;
-      background:#0f2741;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      align-items:center;
-    }
-    .miniPanel{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      padding:10px;
-      color:#fff;
-      font-weight:900;
-    }
-    .miniPanel label{ display:block; font-size:12px; opacity:.9; margin-bottom:6px; }
-    .miniPanel select, .miniPanel input[type="range"]{ width:100%; }
-    .rangeVal{ margin-top:6px; font-size:12px; opacity:.9; }
-
     .modalBtns{
       display:flex;
       gap:10px;
@@ -458,7 +437,6 @@
       .loginShell{ grid-template-columns: 1fr; }
       .brandRow{ flex-direction:column; }
       .brandTitle{ letter-spacing:4px; }
-      .modalFooter{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -561,9 +539,7 @@
           </div>
           <div class="note">
             “Tahlil qilish” → ROI tanlanadi:
-            <b>AI</b> / <b>Qo‘lda STABIL (markaz + slider)</b> / <b>Qo‘lda ERKIN (drag)</b> / <b>Belgilanmasin</b>.
-            <br>
-            Rejim: <b id="modeBadge">STABIL</b>
+            <b>AI</b> / <b>Qo‘lda ERKIN (drag)</b> / <b>Belgilanmasin</b>.
           </div>
         </div>
       </div>
@@ -606,28 +582,9 @@
         </div>
       </div>
 
-      <div class="modalFooter">
-        <div class="miniPanel">
-          <label>AI topgan tugunlar (ixtiyoriy)</label>
-          <select id="noduleSelect">
-            <option value="">— (AI ro‘yxatini yuklash) —</option>
-          </select>
-          <div class="rangeVal" id="noduleHint">AI bilan belgilashni bossangiz ro‘yxat keladi.</div>
-        </div>
-
-        <div class="miniPanel">
-          <label>STABIL ROI kattaligi (frame size)</label>
-          <input id="roiSize" type="range" min="18" max="55" value="28" />
-          <div class="rangeVal" id="roiSizeVal">Frame: 0.28</div>
-        </div>
-      </div>
-
       <div class="modalBtns">
-        <button class="btn gray" id="fastBtn">Tez tahlil</button>
-        <button class="btn green" id="stableBtn">Stabil tahlil</button>
         <button class="btn orange" id="aiBtn">AI bilan belgilash</button>
         <button class="btn white" id="noCropBtn">Belgilanmasin</button>
-        <button class="btn blue" id="manualCenterBtn">Qo‘lda STABIL (markaz)</button>
         <button class="btn green" id="manualDragBtn">Qo‘lda ERKIN (drag)</button>
       </div>
     </div>
@@ -649,20 +606,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEMO_PASS = "12345";
 
   // =========================
-  // REQUEST LOCK (fix: "AI tahlil qilmoqda..." stuck)
+  // REQUEST LOCK
   // =========================
   let activeRequestId = 0;
   function nextRequestId(){ activeRequestId += 1; return activeRequestId; }
   function isActive(reqId){ return reqId === activeRequestId; }
-
-  // =========================
-  // SPEED MODE (Tez/Stabil)
-  // =========================
-  let USE_JITTER = true; // default: STABIL
-  const modeBadge = document.getElementById("modeBadge");
-  function updateModeBadge(){
-    modeBadge.textContent = USE_JITTER ? "STABIL" : "TEZ";
-  }
 
   // =========================
   // Elements: Gate + Consent
@@ -807,19 +755,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  const fastBtn = document.getElementById("fastBtn");
-  const stableBtn = document.getElementById("stableBtn");
-
   const aiBtn = document.getElementById("aiBtn");
   const noCropBtn = document.getElementById("noCropBtn");
-  const manualCenterBtn = document.getElementById("manualCenterBtn");
   const manualDragBtn = document.getElementById("manualDragBtn");
-
-  const roiSize = document.getElementById("roiSize");
-  const roiSizeVal = document.getElementById("roiSizeVal");
-
-  const noduleSelect = document.getElementById("noduleSelect");
-  const noduleHint = document.getElementById("noduleHint");
 
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
@@ -829,17 +767,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let originalImage = new Image();
   let imgLoaded = false;
 
-  // modes
-  let mode = "none"; // "center" | "drag" | "none"
+  // drag mode only
+  let mode = "none"; // "drag" | "none"
   let selecting = false;
   let rect = null;
   let start = null;
 
   // canvas scale
   let canvasScale = 1;
-
-  // AI nodules cache
-  let aiItems = [];
 
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
@@ -861,27 +796,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function drawCanvas(){
     if(!imgLoaded) return;
-
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
-
-    // draw selected AI bbox
-    if(noduleSelect.value){
-      const idx = Number(noduleSelect.value);
-      const item = aiItems[idx];
-      if(item){
-        const [x1,y1,x2,y2] = item.bbox;
-        const sx1 = x1 * canvasScale;
-        const sy1 = y1 * canvasScale;
-        const sw = (x2-x1) * canvasScale;
-        const sh = (y2-y1) * canvasScale;
-        ctx.save();
-        ctx.strokeStyle = "#ffbd3b";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(sx1, sy1, sw, sh);
-        ctx.restore();
-      }
-    }
 
     // draw drag rect
     if(rect){
@@ -908,41 +824,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== BACKEND CALLS =====
-  async function callAnalyze(file, useJitter){
+  async function callAnalyze(file){
     const fd = new FormData();
     fd.append("image", file);
-    fd.append("use_jitter", useJitter ? "true" : "false");
+    fd.append("use_jitter", "true"); // STABIL doim
     const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
     return await r.json();
   }
 
-  async function callDetectMulti(file){
-    const fd = new FormData();
-    fd.append("image", file);
-    fd.append("topk", "8");
-    const r = await fetch(`${API_BASE}/detect_multi`, { method:"POST", body:fd });
-    return await r.json();
-  }
-
-  async function callClassifyCenter(file, cx, cy, frameFrac, useJitter){
-    const fd = new FormData();
-    fd.append("image", file);
-    fd.append("cx", String(cx));
-    fd.append("cy", String(cy));
-    fd.append("frame_frac", String(frameFrac));
-    fd.append("use_jitter", useJitter ? "true" : "false");
-    const r = await fetch(`${API_BASE}/classify_center`, { method:"POST", body:fd });
-    return await r.json();
-  }
-
-  async function callClassifyRoiBBox(file, bbox, useJitter){
+  async function callClassifyRoiBBox(file, bbox){
     const fd = new FormData();
     fd.append("image", file);
     fd.append("x1", String(bbox.x1));
     fd.append("y1", String(bbox.y1));
     fd.append("x2", String(bbox.x2));
     fd.append("y2", String(bbox.y2));
-    fd.append("use_jitter", useJitter ? "true" : "false");
+    fd.append("use_jitter", "true"); // STABIL doim
     const r = await fetch(`${API_BASE}/classify_roi`, { method:"POST", body:fd });
     return await r.json();
   }
@@ -960,17 +857,21 @@ document.addEventListener("DOMContentLoaded", () => {
       metaLine.style.display = "none";
       return;
     }
+    if(res.found === false){
+      riskBox.textContent = "—";
+      summaryBox.textContent = "AI tugun topa olmadi (qo‘lda drag qilib belgilang)";
+      metaLine.style.display = "none";
+      return;
+    }
 
     const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
     riskBox.textContent = `${Math.round(p * 100)}%`;
     summaryBox.textContent = res.triage ? res.triage : "Natija tayyor";
 
-    // meta: mode + p_std
     const std = Number(res.p_std ?? 0);
-    const m = res.mode ? String(res.mode) : "";
-    const uj = (res.use_jitter === true) ? "STABIL" : "TEZ";
+    const used = res.used_path ? String(res.used_path) : (res.mode ? String(res.mode) : "—");
     metaLine.style.display = "block";
-    metaLine.textContent = `Rejim: ${uj} | Mode: ${m} | p_std: ${std.toFixed(3)}`;
+    metaLine.textContent = `Rejim: STABIL | Yo‘l: ${used} | p_std: ${std.toFixed(3)}`;
   }
 
   function showBlobOnMain(blob){
@@ -1004,50 +905,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return { x1, y1, x2, y2 };
   }
 
-  function canvasPointToOriginal(e){
-    const r = canvas.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    const s = 1 / canvasScale;
-    return { ox: x * s, oy: y * s };
-  }
-
-  function updateRoiSizeLabel(){
-    const v = Number(roiSize.value) / 100;
-    roiSizeVal.textContent = `Frame: ${v.toFixed(2)}`;
-  }
-  roiSize.addEventListener("input", ()=>{
-    updateRoiSizeLabel();
-    resetIdleTimer();
-  });
-  updateRoiSizeLabel();
-
-  function resetNoduleSelectUI(){
-    noduleSelect.innerHTML = `<option value="">— (AI ro‘yxatini yuklash) —</option>`;
-    noduleHint.textContent = "AI bilan belgilashni bossangiz ro‘yxat keladi.";
-    aiItems = [];
-  }
-
-  noduleSelect.addEventListener("change", ()=>{
-    drawCanvas();
-    resetIdleTimer();
-  });
-
-  // ===== SPEED BUTTONS =====
-  fastBtn.addEventListener("click", ()=>{
-    USE_JITTER = false;
-    updateModeBadge();
-    alert("TEZ rejim tanlandi (tezroq, lekin ROI sezgir).");
-  });
-
-  stableBtn.addEventListener("click", ()=>{
-    USE_JITTER = true;
-    updateModeBadge();
-    alert("STABIL rejim tanlandi (sekinroq, lekin barqarorroq, p_std bilan).");
-  });
-
-  updateModeBadge();
-
   // ===== FILE LOAD =====
   fileEl.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
@@ -1055,7 +912,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     originalFile = f;
     fileNameEl.textContent = f.name;
-    resetNoduleSelectUI();
 
     try{
       originalImage = await fileToImage(f);
@@ -1068,7 +924,6 @@ document.addEventListener("DOMContentLoaded", () => {
       riskBox.textContent = "—";
       summaryBox.textContent = "Rasm yuklang va tahlil qiling";
       metaLine.style.display = "none";
-
     } catch(err){
       alert("Rasm yuklashda xatolik bo‘ldi.");
       console.error(err);
@@ -1105,7 +960,6 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
     metaLine.style.display = "none";
 
-    resetNoduleSelectUI();
     hideModal();
     resetIdleTimer();
   });
@@ -1115,7 +969,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(e.target === modalBack) hideModal();
   });
 
-  // ===== CANVAS EVENTS =====
+  // ===== CANVAS EVENTS (DRAG ONLY) =====
   canvas.addEventListener("mousedown", (e)=>{
     if(mode !== "drag") return;
     selecting = true;
@@ -1154,7 +1008,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setBusy("Tahlil qilinmoqda...");
 
     try{
-      const res = await callClassifyRoiBBox(originalFile, bbox, USE_JITTER);
+      const res = await callClassifyRoiBBox(originalFile, bbox);
       console.log("MANUAL DRAG JSON:", res);
       if(!isActive(reqId)) return;
       setResultUI(res);
@@ -1170,49 +1024,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  canvas.addEventListener("click", async (e)=>{
-    if(mode !== "center") return;
-    if(!originalFile) return;
-
-    const { ox, oy } = canvasPointToOriginal(e);
-    const frameFrac = Number(roiSize.value) / 100;
-
-    hideModal();
-
-    const reqId = nextRequestId();
-    setBusy("Tahlil qilinmoqda...");
-
-    try{
-      const res = await callClassifyCenter(originalFile, ox, oy, frameFrac, USE_JITTER);
-      console.log("MANUAL CENTER JSON:", res);
-      if(!isActive(reqId)) return;
-      setResultUI(res);
-
-      if(res && res.ok && res.bbox_float){
-        const [x1,y1,x2,y2] = res.bbox_float;
-        const roiBlob = await cropFromBBoxOriginal([
-          Math.max(0, Math.round(x1)),
-          Math.max(0, Math.round(y1)),
-          Math.min(originalImage.width, Math.round(x2)),
-          Math.min(originalImage.height, Math.round(y2))
-        ]);
-        showBlobOnMain(roiBlob);
-      }
-    } catch(err){
-      if(!isActive(reqId)) return;
-      riskBox.textContent = "—";
-      summaryBox.textContent = "Xatolik: backend ulanmagan";
-      metaLine.style.display = "none";
-      console.error(err);
-    }
-  });
-
   // ===== BUTTONS =====
 
-  // AI bilan belgilash:
-  // 1) detect_multi
-  // 2) dropdown fill
-  // 3) default: 1-tugun markazidan classify_center (USE_JITTER rejim bilan)
+  // AI bilan belgilash -> /analyze (dropdownsiz)
   aiBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1220,68 +1034,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const old = aiBtn.textContent;
     aiBtn.textContent = "Kutib turing...";
 
+    hideModal();
+
     const reqId = nextRequestId();
-    setBusy("AI tugunlarni qidirmoqda...");
+    setBusy("AI tahlil qilmoqda...");
 
     try{
-      const det = await callDetectMulti(originalFile);
-      console.log("DETECT_MULTI JSON:", det);
-
+      const res = await callAnalyze(originalFile);
+      console.log("ANALYZE JSON:", res);
       if(!isActive(reqId)) return;
 
-      if(!det || det.ok === false || !det.found || !det.items || det.items.length === 0){
-        // fallback: analyze
-        setBusy("AI tahlil qilmoqda...");
-        const res = await callAnalyze(originalFile, USE_JITTER);
-        console.log("ANALYZE JSON:", res);
-        if(!isActive(reqId)) return;
-
-        if(res && res.ok && res.found){
-          setResultUI(res);
-          if(res.bbox){
-            const roiBlob = await cropFromBBoxOriginal(res.bbox);
-            showBlobOnMain(roiBlob);
-          }
-        } else {
-          alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
-          riskBox.textContent = "—";
-          summaryBox.textContent = "AI tugun topa olmadi";
-          metaLine.style.display = "none";
-        }
-        hideModal();
-        return;
-      }
-
-      aiItems = det.items;
-      noduleSelect.innerHTML = "";
-      aiItems.forEach((it, idx)=>{
-        const conf = Math.round((it.conf || 0) * 100);
-        const opt = document.createElement("option");
-        opt.value = String(idx);
-        opt.textContent = `Tugun ${idx+1} (conf ${conf}%)`;
-        noduleSelect.appendChild(opt);
-      });
-      noduleSelect.value = "0";
-      noduleHint.textContent = "Dropdown’dan tugunni tanlang (ko‘rsatish uchun).";
-
-      // default analyze with center of first bbox
-      const item = aiItems[0];
-      const [x1,y1,x2,y2] = item.bbox;
-      const cx = (x1 + x2) / 2;
-      const cy = (y1 + y2) / 2;
-      const frameFrac = Number(roiSize.value) / 100;
-
-      hideModal();
-      setBusy("AI tahlil qilmoqda...");
-
-      const res = await callClassifyCenter(originalFile, cx, cy, frameFrac, USE_JITTER);
-      console.log("AI CENTER JSON:", res);
-      if(!isActive(reqId)) return;
       setResultUI(res);
 
-      // preview: show AI bbox crop (faqat ko‘rsatish uchun)
-      const roiBlob = await cropFromBBoxOriginal([Math.round(x1), Math.round(y1), Math.round(x2), Math.round(y2)]);
-      showBlobOnMain(roiBlob);
+      // ko‘rsatish: agar server canonical bbox qaytarsa, o‘shani crop qilib ko‘rsatamiz
+      const bb = res.canonical_bbox_float || res.bbox || null;
+      if(bb && bb.length === 4){
+        const x1 = Math.max(0, Math.round(bb[0]));
+        const y1 = Math.max(0, Math.round(bb[1]));
+        const x2 = Math.min(originalImage.width,  Math.round(bb[2]));
+        const y2 = Math.min(originalImage.height, Math.round(bb[3]));
+        const roiBlob = await cropFromBBoxOriginal([x1,y1,x2,y2]);
+        showBlobOnMain(roiBlob);
+      } else {
+        // fallback: original image
+        mainImg.src = originalImage.src;
+        mainImg.style.display="block";
+        mainPlaceholder.style.display="none";
+      }
 
     } catch(err){
       if(!isActive(reqId)) return;
@@ -1296,7 +1075,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Belgilanmasin: /analyze (USE_JITTER bilan)
+  // Belgilanmasin -> /analyze, lekin preview: original image qolsin
   noCropBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1306,22 +1085,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setBusy("AI tahlil qilmoqda...");
 
     try{
-      const res = await callAnalyze(originalFile, USE_JITTER);
+      const res = await callAnalyze(originalFile);
       console.log("ANALYZE JSON:", res);
       if(!isActive(reqId)) return;
-
-      if(!res || res.ok === false){
-        riskBox.textContent = "—";
-        summaryBox.textContent = "Xatolik: natija olinmadi";
-        metaLine.style.display = "none";
-        return;
-      }
-      if(!res.found){
-        riskBox.textContent = "—";
-        summaryBox.textContent = "AI tugun topa olmadi";
-        metaLine.style.display = "none";
-        return;
-      }
 
       setResultUI(res);
 
@@ -1336,18 +1102,6 @@ document.addEventListener("DOMContentLoaded", () => {
       metaLine.style.display = "none";
       console.error(err);
     }
-  });
-
-  // Manual STABIL (markaz)
-  manualCenterBtn.addEventListener("click", ()=>{
-    mode = "center";
-    selecting = false;
-    rect = null;
-    start = null;
-
-    setupCanvasSize();
-    drawCanvas();
-    alert("STABIL markaz rejim: tugun markaziga 1 marta bosing. (Slider bilan frame kattaligini moslang)");
   });
 
   // Manual ERKIN (drag)
@@ -1373,7 +1127,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // boot
   // =========================
   boot();
-  updateModeBadge();
 });
 </script>
 
