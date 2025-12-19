@@ -10,7 +10,6 @@
       --bg:#eef4fb;
       --panel:#ffffff;
       --blue:#0b61b3;
-      --blue2:#094a8d;
       --green:#169a4a;
       --gray:#2f3a49;
       --border:#d6e2f2;
@@ -24,6 +23,7 @@
       background: radial-gradient(1200px 700px at 30% 0%, #f7fbff 0%, var(--bg) 55%, #eaf2ff 100%);
       color:#0b1320;
     }
+
     .wrap{ max-width: 1680px; margin: 18px auto 26px; padding: 0 16px; }
 
     .header{
@@ -50,6 +50,7 @@
       align-items:center;
       gap:14px;
     }
+
     .logoBox{ display:flex; align-items:center; gap:14px; min-width:0; }
     .logoBox.right{ justify-content:flex-end; }
     .logo{
@@ -132,6 +133,7 @@
       gap:14px;
       margin-top:12px;
     }
+
     .card{
       background:var(--panel);
       border:1px solid var(--border);
@@ -200,6 +202,18 @@
     }
     .bigBox.small{ font-size:20px; min-height:76px; }
 
+    .metaLine{
+      margin-top:10px;
+      border:1px dashed #cfe0f5;
+      background:#f7fbff;
+      border-radius:12px;
+      padding:10px 12px;
+      color:#2a3b55;
+      font-weight:900;
+      font-size:13px;
+      line-height:1.35;
+    }
+
     .disclaimerBox{
       margin-top:14px;
       border-radius:16px;
@@ -226,8 +240,6 @@
       box-shadow: 0 10px 22px rgba(10,30,60,.12);
       width:auto;
     }
-    .logoutBtn:hover{ filter:brightness(.98); }
-    .logoutBtn:active{ transform:scale(.97); }
     .floatingLogout{
       position:fixed;
       right:22px;
@@ -304,14 +316,8 @@
       font-weight:900;
     }
     .miniPanel label{ display:block; font-size:12px; opacity:.9; margin-bottom:6px; }
-    .miniPanel select, .miniPanel input[type="range"]{
-      width:100%;
-    }
-    .rangeVal{
-      margin-top:6px;
-      font-size:12px;
-      opacity:.9;
-    }
+    .miniPanel select, .miniPanel input[type="range"]{ width:100%; }
+    .rangeVal{ margin-top:6px; font-size:12px; opacity:.9; }
 
     .modalBtns{
       display:flex;
@@ -379,7 +385,6 @@
       line-height:1.05;
     }
     .brandSub{ margin-top:10px; font-size:16px; font-weight:800; color:#17355a; z-index:1; }
-    .brandNote{ margin-top:14px; color:#3b4a5f; font-size:14px; line-height:1.55; max-width:520px; z-index:1; }
 
     .formPane{
       padding:28px 26px;
@@ -469,7 +474,6 @@
           <div><h1 class="brandTitle">QALQONSIMON AI</h1></div>
         </div>
         <div class="brandSub">UTT tasvirida tugunlarni AI bilan baholash yordamchisi</div>
-        <div class="brandNote"></div>
       </div>
 
       <div class="formPane">
@@ -558,6 +562,8 @@
           <div class="note">
             “Tahlil qilish” → ROI tanlanadi:
             <b>AI</b> / <b>Qo‘lda STABIL (markaz + slider)</b> / <b>Qo‘lda ERKIN (drag)</b> / <b>Belgilanmasin</b>.
+            <br>
+            Rejim: <b id="modeBadge">STABIL</b>
           </div>
         </div>
       </div>
@@ -571,6 +577,8 @@
 
           <div class="center" style="margin-top:14px;"><div class="pill green">MODEL XULOSASI</div></div>
           <div class="bigBox small" id="summaryBox">Rasm yuklang va tahlil qiling</div>
+
+          <div class="metaLine" id="metaLine" style="display:none;">—</div>
 
           <div class="disclaimerBox">
             <b>Eslatma:</b> Bu AI modeli klinik qarorni belgilamaydi.
@@ -598,7 +606,6 @@
         </div>
       </div>
 
-      <!-- AI multi-nodule + slider -->
       <div class="modalFooter">
         <div class="miniPanel">
           <label>AI topgan tugunlar (ixtiyoriy)</label>
@@ -616,6 +623,8 @@
       </div>
 
       <div class="modalBtns">
+        <button class="btn gray" id="fastBtn">Tez tahlil</button>
+        <button class="btn green" id="stableBtn">Stabil tahlil</button>
         <button class="btn orange" id="aiBtn">AI bilan belgilash</button>
         <button class="btn white" id="noCropBtn">Belgilanmasin</button>
         <button class="btn blue" id="manualCenterBtn">Qo‘lda STABIL (markaz)</button>
@@ -639,7 +648,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEMO_USER = "doctor";
   const DEMO_PASS = "12345";
 
-  // Gate + Consent
+  // =========================
+  // REQUEST LOCK (fix: "AI tahlil qilmoqda..." stuck)
+  // =========================
+  let activeRequestId = 0;
+  function nextRequestId(){ activeRequestId += 1; return activeRequestId; }
+  function isActive(reqId){ return reqId === activeRequestId; }
+
+  // =========================
+  // SPEED MODE (Tez/Stabil)
+  // =========================
+  let USE_JITTER = true; // default: STABIL
+  const modeBadge = document.getElementById("modeBadge");
+  function updateModeBadge(){
+    modeBadge.textContent = USE_JITTER ? "STABIL" : "TEZ";
+  }
+
+  // =========================
+  // Elements: Gate + Consent
+  // =========================
   const gate = document.getElementById("gate");
   const app = document.getElementById("app");
   const loginUser = document.getElementById("loginUser");
@@ -738,10 +765,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   closeConsent.addEventListener("click", ()=>{ doLogout(); });
-
-  if(logoutBtn){
-    logoutBtn.addEventListener("click", ()=>{ doLogout(); });
-  }
+  if(logoutBtn){ logoutBtn.addEventListener("click", ()=>{ doLogout(); }); }
 
   // =========================
   // AUTO LOGOUT: 5 min
@@ -783,6 +807,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
+  const fastBtn = document.getElementById("fastBtn");
+  const stableBtn = document.getElementById("stableBtn");
+
   const aiBtn = document.getElementById("aiBtn");
   const noCropBtn = document.getElementById("noCropBtn");
   const manualCenterBtn = document.getElementById("manualCenterBtn");
@@ -796,6 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const riskBox = document.getElementById("riskBox");
   const summaryBox = document.getElementById("summaryBox");
+  const metaLine = document.getElementById("metaLine");
 
   let originalFile = null;
   let originalImage = new Image();
@@ -808,10 +836,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let start = null;
 
   // canvas scale
-  let canvasScale = 1;  // displayed_px / original_px
+  let canvasScale = 1;
 
   // AI nodules cache
-  let aiItems = []; // [{bbox:[x1,y1,x2,y2], conf:...}]
+  let aiItems = [];
 
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
@@ -837,7 +865,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
 
-    // draw AI selected bbox
+    // draw selected AI bbox
     if(noduleSelect.value){
       const idx = Number(noduleSelect.value);
       const item = aiItems[idx];
@@ -880,9 +908,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== BACKEND CALLS =====
-  async function callAnalyze(file){
+  async function callAnalyze(file, useJitter){
     const fd = new FormData();
     fd.append("image", file);
+    fd.append("use_jitter", useJitter ? "true" : "false");
     const r = await fetch(`${API_BASE}/analyze`, { method:"POST", body:fd });
     return await r.json();
   }
@@ -895,41 +924,53 @@ document.addEventListener("DOMContentLoaded", () => {
     return await r.json();
   }
 
-  async function callClassifyCenter(file, cx, cy, frameFrac){
+  async function callClassifyCenter(file, cx, cy, frameFrac, useJitter){
     const fd = new FormData();
     fd.append("image", file);
     fd.append("cx", String(cx));
     fd.append("cy", String(cy));
     fd.append("frame_frac", String(frameFrac));
-    fd.append("use_jitter", "true");
+    fd.append("use_jitter", useJitter ? "true" : "false");
     const r = await fetch(`${API_BASE}/classify_center`, { method:"POST", body:fd });
     return await r.json();
   }
 
-  async function callClassifyRoiBBox(file, bbox){
+  async function callClassifyRoiBBox(file, bbox, useJitter){
     const fd = new FormData();
     fd.append("image", file);
     fd.append("x1", String(bbox.x1));
     fd.append("y1", String(bbox.y1));
     fd.append("x2", String(bbox.x2));
     fd.append("y2", String(bbox.y2));
-    fd.append("use_jitter", "true");
+    fd.append("use_jitter", useJitter ? "true" : "false");
     const r = await fetch(`${API_BASE}/classify_roi`, { method:"POST", body:fd });
     return await r.json();
+  }
+
+  function setBusy(text){
+    summaryBox.textContent = text || "Tahlil qilinmoqda...";
+    metaLine.style.display = "none";
+    metaLine.textContent = "";
   }
 
   function setResultUI(res){
     if(!res || res.ok === false){
       riskBox.textContent = "—";
       summaryBox.textContent = "Xatolik: natija olinmadi";
+      metaLine.style.display = "none";
       return;
     }
 
     const p = Math.max(0, Math.min(1, Number(res.p_malignant ?? 0)));
     riskBox.textContent = `${Math.round(p * 100)}%`;
-
-    // triage text (backend sizda matn qaytaradi)
     summaryBox.textContent = res.triage ? res.triage : "Natija tayyor";
+
+    // meta: mode + p_std
+    const std = Number(res.p_std ?? 0);
+    const m = res.mode ? String(res.mode) : "";
+    const uj = (res.use_jitter === true) ? "STABIL" : "TEZ";
+    metaLine.style.display = "block";
+    metaLine.textContent = `Rejim: ${uj} | Mode: ${m} | p_std: ${std.toFixed(3)}`;
   }
 
   function showBlobOnMain(blob){
@@ -950,11 +991,12 @@ document.addEventListener("DOMContentLoaded", () => {
     tmp.width = w; tmp.height = h;
     const tctx = tmp.getContext("2d");
     tctx.drawImage(originalImage, x1, y1, w, h, 0, 0, w, h);
+
     return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
   }
 
   function rectToBBoxOriginal(){
-    const s = 1 / canvasScale; // original_px / displayed_px
+    const s = 1 / canvasScale;
     const x1 = Math.round(rect.x * s);
     const y1 = Math.round(rect.y * s);
     const x2 = Math.round((rect.x + rect.w) * s);
@@ -986,11 +1028,25 @@ document.addEventListener("DOMContentLoaded", () => {
     aiItems = [];
   }
 
-  noduleSelect.addEventListener("change", async ()=>{
-    if(!noduleSelect.value) { drawCanvas(); return; }
+  noduleSelect.addEventListener("change", ()=>{
     drawCanvas();
     resetIdleTimer();
   });
+
+  // ===== SPEED BUTTONS =====
+  fastBtn.addEventListener("click", ()=>{
+    USE_JITTER = false;
+    updateModeBadge();
+    alert("TEZ rejim tanlandi (tezroq, lekin ROI sezgir).");
+  });
+
+  stableBtn.addEventListener("click", ()=>{
+    USE_JITTER = true;
+    updateModeBadge();
+    alert("STABIL rejim tanlandi (sekinroq, lekin barqarorroq, p_std bilan).");
+  });
+
+  updateModeBadge();
 
   // ===== FILE LOAD =====
   fileEl.addEventListener("change", async (e)=>{
@@ -1011,6 +1067,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       riskBox.textContent = "—";
       summaryBox.textContent = "Rasm yuklang va tahlil qiling";
+      metaLine.style.display = "none";
+
     } catch(err){
       alert("Rasm yuklashda xatolik bo‘ldi.");
       console.error(err);
@@ -1045,6 +1103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     riskBox.textContent = "—";
     summaryBox.textContent = "Rasm yuklang va tahlil qiling";
+    metaLine.style.display = "none";
 
     resetNoduleSelectUI();
     hideModal();
@@ -1091,14 +1150,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const bbox = rectToBBoxOriginal();
     hideModal();
 
-    summaryBox.textContent = "Tahlil qilinmoqda...";
-    const res = await callClassifyRoiBBox(originalFile, bbox);
-    console.log("MANUAL DRAG JSON:", res);
-    setResultUI(res);
+    const reqId = nextRequestId();
+    setBusy("Tahlil qilinmoqda...");
 
-    // preview uchun
-    const roiBlob = await cropFromBBoxOriginal([bbox.x1, bbox.y1, bbox.x2, bbox.y2]);
-    showBlobOnMain(roiBlob);
+    try{
+      const res = await callClassifyRoiBBox(originalFile, bbox, USE_JITTER);
+      console.log("MANUAL DRAG JSON:", res);
+      if(!isActive(reqId)) return;
+      setResultUI(res);
+
+      const roiBlob = await cropFromBBoxOriginal([bbox.x1, bbox.y1, bbox.x2, bbox.y2]);
+      showBlobOnMain(roiBlob);
+    } catch(err){
+      if(!isActive(reqId)) return;
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: backend ulanmagan";
+      metaLine.style.display = "none";
+      console.error(err);
+    }
   });
 
   canvas.addEventListener("click", async (e)=>{
@@ -1109,31 +1178,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const frameFrac = Number(roiSize.value) / 100;
 
     hideModal();
-    summaryBox.textContent = "Tahlil qilinmoqda...";
 
-    const res = await callClassifyCenter(originalFile, ox, oy, frameFrac);
-    console.log("MANUAL CENTER JSON:", res);
-    setResultUI(res);
+    const reqId = nextRequestId();
+    setBusy("Tahlil qilinmoqda...");
 
-    // preview uchun: biz bbox_float qaytarganmiz
-    if(res && res.ok && res.bbox_float){
-      const [x1,y1,x2,y2] = res.bbox_float;
-      const roiBlob = await cropFromBBoxOriginal([
-        Math.max(0, Math.round(x1)),
-        Math.max(0, Math.round(y1)),
-        Math.min(originalImage.width, Math.round(x2)),
-        Math.min(originalImage.height, Math.round(y2))
-      ]);
-      showBlobOnMain(roiBlob);
+    try{
+      const res = await callClassifyCenter(originalFile, ox, oy, frameFrac, USE_JITTER);
+      console.log("MANUAL CENTER JSON:", res);
+      if(!isActive(reqId)) return;
+      setResultUI(res);
+
+      if(res && res.ok && res.bbox_float){
+        const [x1,y1,x2,y2] = res.bbox_float;
+        const roiBlob = await cropFromBBoxOriginal([
+          Math.max(0, Math.round(x1)),
+          Math.max(0, Math.round(y1)),
+          Math.min(originalImage.width, Math.round(x2)),
+          Math.min(originalImage.height, Math.round(y2))
+        ]);
+        showBlobOnMain(roiBlob);
+      }
+    } catch(err){
+      if(!isActive(reqId)) return;
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: backend ulanmagan";
+      metaLine.style.display = "none";
+      console.error(err);
     }
   });
 
   // ===== BUTTONS =====
 
   // AI bilan belgilash:
-  // 1) AI ro‘yxatini olib kelamiz (detect_multi)
-  // 2) dropdown to‘ldiramiz
-  // 3) default: 1-tugun markazidan classify_center qilamiz (frame slider bilan)
+  // 1) detect_multi
+  // 2) dropdown fill
+  // 3) default: 1-tugun markazidan classify_center (USE_JITTER rejim bilan)
   aiBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
@@ -1141,16 +1220,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const old = aiBtn.textContent;
     aiBtn.textContent = "Kutib turing...";
 
-    try{
-      summaryBox.textContent = "AI tugunlarni qidirmoqda...";
+    const reqId = nextRequestId();
+    setBusy("AI tugunlarni qidirmoqda...");
 
+    try{
       const det = await callDetectMulti(originalFile);
       console.log("DETECT_MULTI JSON:", det);
 
+      if(!isActive(reqId)) return;
+
       if(!det || det.ok === false || !det.found || !det.items || det.items.length === 0){
-        // fallback: eski analyze ishlasin
-        const res = await callAnalyze(originalFile);
+        // fallback: analyze
+        setBusy("AI tahlil qilmoqda...");
+        const res = await callAnalyze(originalFile, USE_JITTER);
         console.log("ANALYZE JSON:", res);
+        if(!isActive(reqId)) return;
+
         if(res && res.ok && res.found){
           setResultUI(res);
           if(res.bbox){
@@ -1159,6 +1244,9 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else {
           alert("AI tugun topolmadi. Qo‘lda belgilashni tanlang.");
+          riskBox.textContent = "—";
+          summaryBox.textContent = "AI tugun topa olmadi";
+          metaLine.style.display = "none";
         }
         hideModal();
         return;
@@ -1174,11 +1262,9 @@ document.addEventListener("DOMContentLoaded", () => {
         noduleSelect.appendChild(opt);
       });
       noduleSelect.value = "0";
-      noduleHint.textContent = "Dropdown’dan tugunni tanlab, keyin Qo‘lda STABIL (markaz) ham ishlatishingiz mumkin.";
+      noduleHint.textContent = "Dropdown’dan tugunni tanlang (ko‘rsatish uchun).";
 
-      drawCanvas();
-
-      // default: 1-tugunni stable qilib baholaymiz
+      // default analyze with center of first bbox
       const item = aiItems[0];
       const [x1,y1,x2,y2] = item.bbox;
       const cx = (x1 + x2) / 2;
@@ -1186,18 +1272,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const frameFrac = Number(roiSize.value) / 100;
 
       hideModal();
-      summaryBox.textContent = "AI tahlil qilmoqda...";
+      setBusy("AI tahlil qilmoqda...");
 
-      const res = await callClassifyCenter(originalFile, cx, cy, frameFrac);
+      const res = await callClassifyCenter(originalFile, cx, cy, frameFrac, USE_JITTER);
       console.log("AI CENTER JSON:", res);
+      if(!isActive(reqId)) return;
       setResultUI(res);
 
-      // preview
+      // preview: show AI bbox crop (faqat ko‘rsatish uchun)
       const roiBlob = await cropFromBBoxOriginal([Math.round(x1), Math.round(y1), Math.round(x2), Math.round(y2)]);
       showBlobOnMain(roiBlob);
 
     } catch(err){
+      if(!isActive(reqId)) return;
       alert("Xatolik: backend ulanmagan yoki javob bermadi.");
+      riskBox.textContent = "—";
+      summaryBox.textContent = "Xatolik: backend ulanmagan";
+      metaLine.style.display = "none";
       console.error(err);
     } finally {
       aiBtn.disabled = false;
@@ -1205,25 +1296,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Belgilanmasin: /analyze (original rasm qoladi)
+  // Belgilanmasin: /analyze (USE_JITTER bilan)
   noCropBtn.addEventListener("click", async ()=>{
     if(!originalFile) return;
 
     hideModal();
-    summaryBox.textContent = "AI tahlil qilmoqda...";
+
+    const reqId = nextRequestId();
+    setBusy("AI tahlil qilmoqda...");
 
     try{
-      const res = await callAnalyze(originalFile);
+      const res = await callAnalyze(originalFile, USE_JITTER);
       console.log("ANALYZE JSON:", res);
+      if(!isActive(reqId)) return;
 
       if(!res || res.ok === false){
         riskBox.textContent = "—";
         summaryBox.textContent = "Xatolik: natija olinmadi";
+        metaLine.style.display = "none";
         return;
       }
       if(!res.found){
         riskBox.textContent = "—";
         summaryBox.textContent = "AI tugun topa olmadi";
+        metaLine.style.display = "none";
         return;
       }
 
@@ -1234,8 +1330,10 @@ document.addEventListener("DOMContentLoaded", () => {
       mainPlaceholder.style.display = "none";
 
     } catch(err){
+      if(!isActive(reqId)) return;
       riskBox.textContent = "—";
       summaryBox.textContent = "Xatolik: backend ulanmagan";
+      metaLine.style.display = "none";
       console.error(err);
     }
   });
@@ -1249,7 +1347,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setupCanvasSize();
     drawCanvas();
-    alert("STABIL rejim: Tugun markaziga 1 marta bosasiz. (Slider bilan ROI kattaligini moslang)");
+    alert("STABIL markaz rejim: tugun markaziga 1 marta bosing. (Slider bilan frame kattaligini moslang)");
   });
 
   // Manual ERKIN (drag)
@@ -1261,7 +1359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setupCanvasSize();
     drawCanvas();
-    alert("ERKIN rejim: ROI ni sichqoncha bilan bosib-tortib belgilang. (Bu rejimda natija sezgir bo‘lishi mumkin)");
+    alert("ERKIN drag rejim: ROI ni bosib-tortib belgilang.");
   });
 
   window.addEventListener("resize", ()=>{
@@ -1272,14 +1370,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // Logout + boot
+  // boot
   // =========================
-  if(logoutBtn){
-    logoutBtn.addEventListener("click", ()=>{ doLogout(); });
-  }
-
   boot();
-
+  updateModeBadge();
 });
 </script>
 
