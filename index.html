@@ -619,7 +619,7 @@
           </div>
           <div class="note">
             “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / Qo‘lda belgilash / Belgilanmasin).
-            AI endi <b>/tahlil qilish</b> orqali ishlaydi.
+            AI endi <b>/analyze</b> orqali ishlaydi.
           </div>
         </div>
       </div>
@@ -654,7 +654,7 @@
   <div class="modalBack" id="modalBack">
     <div class="modal">
       <div class="modalHead">
-        <div>ROI belgilash </div>
+        <div>ROI belgilash</div>
         <div class="closeX" id="closeModal">✕</div>
       </div>
 
@@ -856,22 +856,32 @@ document.addEventListener("DOMContentLoaded", () => {
   let rect = null;
   let start = null;
 
+  // ===== CANVAS SCALE (STABIL) =====
+  let canvasScale = 1;  // displayed_px / original_px
+
   function openModal(){ modalBack.style.display = "flex"; }
   function hideModal(){
     modalBack.style.display = "none";
     selecting = false;
     start = null;
     rect = null;
-    drawCanvas();
+    // chizishni modal yopilganda shart emas, lekin zarar qilmaydi
+    if(imgLoaded){
+      drawCanvas();
+    }
+  }
+
+  function setupCanvasSize(){
+    if(!imgLoaded) return;
+    const maxW = canvas.parentElement.clientWidth;
+    canvasScale = maxW / originalImage.width;
+
+    canvas.width = Math.floor(originalImage.width * canvasScale);
+    canvas.height = Math.floor(originalImage.height * canvasScale);
   }
 
   function drawCanvas(){
     if(!imgLoaded) return;
-    const maxW = canvas.parentElement.clientWidth;
-    const scale = maxW / originalImage.width;
-
-    canvas.width = Math.floor(originalImage.width * scale);
-    canvas.height = Math.floor(originalImage.height * scale);
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(originalImage, 0,0, canvas.width, canvas.height);
@@ -907,10 +917,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return await r.json();
   }
 
-  async function callClassifyRoi(roiBlob){
+  // ✅ NEW: manual ROI -> backend crop
+  async function callClassifyRoiBBox(file, bbox){
     const fd = new FormData();
-    fd.append("image", roiBlob, "roi.jpg");
-    const r = await fetch(`${API_BASE}/classify`, { method:"POST", body:fd });
+    fd.append("image", file);
+
+    fd.append("x1", String(bbox.x1));
+    fd.append("y1", String(bbox.y1));
+    fd.append("x2", String(bbox.x2));
+    fd.append("y2", String(bbox.y2));
+
+    // stabil:
+    fd.append("use_jitter", "true");
+    fd.append("pad_frac", "0.08");
+
+    const r = await fetch(`${API_BASE}/classify_roi`, { method:"POST", body:fd });
     return await r.json();
   }
 
@@ -925,6 +946,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     riskBox.textContent = `${pct}%`;
 
+    // Sizning backend triage matn qaytaradi, shuning uchun fallback ishlaydi
     const t = (res.triage || "").toLowerCase();
     if(t === "benign") summaryBox.textContent = "YAXSHI SIFATLI";
     else if(t === "suspicious") summaryBox.textContent = "SHUBHALI";
@@ -941,12 +963,13 @@ document.addEventListener("DOMContentLoaded", () => {
     mainImg.src = url;
   }
 
+  // ROI preview uchun (faqat ko‘rsatish)
   function cropFromRectScaledToOriginal(){
-    const scale = originalImage.width / canvas.width;
-    const x = Math.round(rect.x * scale);
-    const y = Math.round(rect.y * scale);
-    const w = Math.round(rect.w * scale);
-    const h = Math.round(rect.h * scale);
+    const s = 1 / canvasScale; // original_px / displayed_px
+    const x = Math.round(rect.x * s);
+    const y = Math.round(rect.y * s);
+    const w = Math.round(rect.w * s);
+    const h = Math.round(rect.h * s);
 
     const tmp = document.createElement("canvas");
     tmp.width = Math.max(1,w);
@@ -955,6 +978,15 @@ document.addEventListener("DOMContentLoaded", () => {
     tctx.drawImage(originalImage, x, y, w, h, 0, 0, w, h);
 
     return new Promise(resolve => tmp.toBlob(resolve, "image/jpeg", 0.95));
+  }
+
+  function rectToBBoxOriginal(){
+    const s = 1 / canvasScale; // original_px / displayed_px
+    const x1 = Math.round(rect.x * s);
+    const y1 = Math.round(rect.y * s);
+    const x2 = Math.round((rect.x + rect.w) * s);
+    const y2 = Math.round((rect.y + rect.h) * s);
+    return { x1, y1, x2, y2 };
   }
 
   function cropFromBBoxOriginal(bbox){
@@ -1003,7 +1035,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     openModal();
-    setTimeout(drawCanvas, 50);
+    setTimeout(()=>{
+      setupCanvasSize();
+      drawCanvas();
+    }, 50);
     resetIdleTimer();
   });
 
@@ -1050,22 +1085,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if(rect.w < 0){ rect.x = x; rect.w = Math.abs(rect.w); } else rect.x = start.x;
     if(rect.h < 0){ rect.y = y; rect.h = Math.abs(rect.h); } else rect.y = start.y;
 
+    // IMPORTANT: bu yerda canvas.width/height o‘zgarmaydi!
     drawCanvas();
   });
 
   canvas.addEventListener("mouseup", async ()=>{
     if(!selecting || !rect) return;
+
     selecting = false;
     start = null;
     drawCanvas();
 
+    // 1) bbox original pixelda (backend uchun)
+    const bbox = rectToBBoxOriginal();
+
+    // 2) ROI preview (faqat ko‘rsatish uchun)
     const roiBlob = await cropFromRectScaledToOriginal();
+
     hideModal();
 
     summaryBox.textContent = "Tahlil qilinmoqda...";
-    const res = await callClassifyRoi(roiBlob);
-    setResultUI(res);
+    const res = await callClassifyRoiBBox(originalFile, bbox);
+    console.log("MANUAL ROI JSON:", res);
 
+    setResultUI(res);
     showBlobOnMain(roiBlob);
   });
 
@@ -1095,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setResultUI(res);
 
-      // UI: avvalgidek ROI crop ko‘rsatamiz (faqat ko‘rsatish uchun)
+      // UI: ROI crop ko‘rsatish (faqat ko‘rsatish uchun)
       if(res.bbox){
         const roiBlob = await cropFromBBoxOriginal(res.bbox);
         hideModal();
@@ -1154,12 +1197,19 @@ document.addEventListener("DOMContentLoaded", () => {
     selecting = true;
     rect = null;
     start = null;
+
+    // modal ochiq bo‘lsa canvas size tayyor bo‘lishi kerak
+    setupCanvasSize();
     drawCanvas();
+
     alert("ROI ni sichqonchaning chap tugmasini bosib turgan holda belgilang.");
   });
 
   window.addEventListener("resize", ()=>{
-    if(modalBack.style.display === "flex") drawCanvas();
+    if(modalBack.style.display === "flex"){
+      setupCanvasSize();
+      drawCanvas();
+    }
   });
 
   boot();
@@ -1169,4 +1219,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
-
