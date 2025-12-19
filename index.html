@@ -522,7 +522,7 @@
             <h1 class="brandTitle">QALQONSIMON AI</h1>
           </div>
         </div>
-        <div class="brandSub">UTT tasvirida tugunlarni baholash yordamchisi</div>
+        <div class="brandSub">UTT tasvirida tugunlarni AI bilan baholash yordamchisi</div>
         <div class="brandNote"></div>
       </div>
 
@@ -533,7 +533,7 @@
         <div class="loginErr" id="loginErr"></div>
         <button class="loginBtn" id="loginBtn">Kirish</button>
         <div style="font-size:12px;color:#5a6b82;line-height:1.5;">
-          * Bu demo verison uchun.
+          * Bu demo versiya.
         </div>
       </div>
     </div>
@@ -548,7 +548,7 @@
       </div>
 
       <div class="consentBody">
-        Men “Qalqonsimon AI” dasturi tijorat (klinika) foydalanish uchun mo‘ljallanmagan,
+        Men “Qalqonsimon AI” dasturi tijorat (klinika) foydalanish uchun mo‘ljallanmaganini,
         faqat ilmiy-tadqiqot (research) maqsadidagi demo ekanligini to‘liq tushunaman.
         <br><br>
         Ushbu dastur klinik qarorni belgilamaydi.
@@ -582,7 +582,7 @@
 
         <div class="titleBlock">
           <h1 class="title">QALQONSIMON AI</h1>
-          <div class="subtitle">UTT tasvirida tugunlarni baholash yordamchisi</div>
+          <div class="subtitle">UTT tasvirida tugunlarni AI yordamida baholash yordamchisi</div>
           <div class="desc">
             Qalqonsimon bez UTT tasvirini yuklang va <b>“Tahlil qilish”</b> tugmasini bosing.
           </div>
@@ -619,7 +619,7 @@
           </div>
           <div class="note">
             “Tahlil qilish” → ROI tanlanadi (AI bilan belgilash / Qo‘lda belgilash / Belgilanmasin).
-            AI endi <b>/analyze</b> orqali ishlaydi (backend o‘zi crop qiladi).
+            AI endi <b>/tahlil qilish</b> orqali ishlaydi.
           </div>
         </div>
       </div>
@@ -629,7 +629,7 @@
         <div class="cardBody">
 
           <div class="center">
-            <div class="pill">TUGUN YOMON SIFATLILIK EHTIMOLI</div>
+            <div class="pill">TUGUNNING YOMON SIFATLILIK EHTIMOLI</div>
           </div>
           <div class="bigBox" id="riskBox">—</div>
 
@@ -654,7 +654,7 @@
   <div class="modalBack" id="modalBack">
     <div class="modal">
       <div class="modalHead">
-        <div>ROI belgilash (crop)</div>
+        <div>ROI belgilash </div>
         <div class="closeX" id="closeModal">✕</div>
       </div>
 
@@ -1131,7 +1131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if(!res.found){
         riskBox.textContent = "—";
-        summaryBox.textContent = "AI tugun topolmadi";
+        summaryBox.textContent = "AI tugun topa olmadi";
         return;
       }
 
@@ -1155,7 +1155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rect = null;
     start = null;
     drawCanvas();
-    alert("ROI ni sichqoncha bilan tortib belgilang (drag).");
+    alert("ROI ni sichqonchaning chap tugmasini bosib turgan holda belgilang.");
   });
 
   window.addEventListener("resize", ()=>{
@@ -1169,3 +1169,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
